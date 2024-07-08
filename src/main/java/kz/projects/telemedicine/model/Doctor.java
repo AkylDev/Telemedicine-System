@@ -13,8 +13,10 @@ public class Doctor {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String name;
   private String specialization;
   @Lob
   private String schedule;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  private User user;
 }

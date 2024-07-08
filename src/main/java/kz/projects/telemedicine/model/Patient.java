@@ -21,4 +21,7 @@ public class Patient {
   private String phone;
   @Lob
   private String medicalHistory;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  private User user;
 }

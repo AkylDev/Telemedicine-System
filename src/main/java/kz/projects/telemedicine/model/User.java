@@ -1,9 +1,7 @@
 package kz.projects.telemedicine.model;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,12 +9,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
-public class MyUserDetails implements UserDetails {
+@Table(name = "t_users")
+public class User implements UserDetails {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  final Patient patient;
+  @Column(unique = true)
+  private String email;
 
   private String password;
 
@@ -35,6 +38,6 @@ public class MyUserDetails implements UserDetails {
 
   @Override
   public String getUsername() {
-    return patient.getEmail();
+    return this.email;
   }
 }

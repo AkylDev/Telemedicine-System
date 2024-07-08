@@ -14,7 +14,6 @@ public class Permissions implements GrantedAuthority {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "user_role")
   private String role;
   @Override
   public String getAuthority() {
