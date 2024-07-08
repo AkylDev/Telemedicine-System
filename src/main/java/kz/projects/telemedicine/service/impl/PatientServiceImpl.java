@@ -16,7 +16,14 @@ public class PatientServiceImpl implements PatientService {
   private final DoctorRepository doctorRepository;
 
   @Override
-  public List<Doctor> getDoctors() {
-    return doctorRepository.findAll();
+  public String getDoctors() {
+    List<Doctor> allDoctors = doctorRepository.findAll();
+    StringBuilder list = new StringBuilder();
+
+    for (Doctor doc : allDoctors){
+      list.append(doc.getName()).append(" is available at ").append(doc.getSchedule()).append("\n");
+    }
+
+    return String.valueOf(list);
   }
 }
