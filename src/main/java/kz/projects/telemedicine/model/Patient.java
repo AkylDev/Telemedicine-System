@@ -19,7 +19,6 @@ public class Patient {
   private String email;
 
   private String phone;
-  @Lob
   private String medicalHistory;
 
   @OneToOne(cascade = CascadeType.ALL)

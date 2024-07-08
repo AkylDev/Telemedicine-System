@@ -1,7 +1,9 @@
 package kz.projects.telemedicine.controllers;
 
+import kz.projects.telemedicine.dto.DoctorRequest;
 import kz.projects.telemedicine.dto.LoginRequest;
 import kz.projects.telemedicine.dto.RegisterRequest;
+import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -35,4 +37,11 @@ public class AuthController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
   }
+
+  @PostMapping("/add-doctor")
+  public ResponseEntity<?> addDoctor(@RequestBody DoctorRequest request) {
+    Doctor doctor = authService.addDoctor(request);
+    return ResponseEntity.ok(doctor);
+  }
+
 }

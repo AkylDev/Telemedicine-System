@@ -1,10 +1,13 @@
 package kz.projects.telemedicine.service.impl;
 
+import kz.projects.telemedicine.dto.DoctorRequest;
 import kz.projects.telemedicine.dto.LoginRequest;
 import kz.projects.telemedicine.dto.RegisterRequest;
+import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.model.Permissions;
 import kz.projects.telemedicine.model.User;
+import kz.projects.telemedicine.repositories.DoctorRepository;
 import kz.projects.telemedicine.repositories.PatientRepository;
 import kz.projects.telemedicine.repositories.PermissionsRepository;
 import kz.projects.telemedicine.repositories.UserRepository;
@@ -32,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
   private final PermissionsRepository  permissionRepository;
 
   private final MyUserDetailsService userDetailsService;
+
+  private final DoctorRepository doctorRepository;
 
   @Override
   public Patient register(RegisterRequest registerRequest) {
@@ -80,5 +85,37 @@ public class AuthServiceImpl implements AuthService {
     }
   }
 
+  @Override
+  public Doctor addDoctor(DoctorRequest doctorRequest) {
+    User checkUser = userRepository.findByEmail(doctorRequest.getEmail());
+
+    if(checkUser==null){
+      User user = new User();
+      user.setEmail(doctorRequest.getEmail());
+      user.setPassword(passwordEncoder.encode(doctorRequest.getPassword()));
+
+      Permissions defaultPermission = permissionRepository.findByRole("ROLE_DOCTOR");
+      if (defaultPermission == null) {
+        defaultPermission = new Permissions();
+        defaultPermission.setRole("ROLE_DOCTOR");
+        defaultPermission = permissionRepository.save(defaultPermission);
+      }
+      user.setPermissionList(Collections.singletonList(defaultPermission));
+
+      Doctor doctor = new Doctor();
+      doctor.setName(doctorRequest.getName());
+      doctor.setEmail(doctorRequest.getEmail());
+      doctor.setSpecialization(doctorRequest.getSpecialization());
+      doctor.setSchedule(doctorRequest.getSchedule());
+      doctor.setUser(user);
+
+      userRepository.save(user);
+
+      return doctorRepository.save(doctor);
+    }
+    else {
+      return null;
+    }
+  }
 
 }

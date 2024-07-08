@@ -13,8 +13,9 @@ public class Doctor {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private String name;
+  private String email;
   private String specialization;
-  @Lob
   private String schedule;
 
   @OneToOne(cascade = CascadeType.ALL)
