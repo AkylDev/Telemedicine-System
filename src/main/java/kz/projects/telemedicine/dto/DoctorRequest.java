@@ -1,5 +1,6 @@
 package kz.projects.telemedicine.dto;
 
+import kz.projects.telemedicine.model.Specialization;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,6 @@ public class DoctorRequest {
   private String name;
   private String email;
   private String password;
-  private String specialization;
+  private Specialization specialization;
   private String schedule;
 }

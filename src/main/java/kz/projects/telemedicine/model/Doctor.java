@@ -15,7 +15,10 @@ public class Doctor {
 
   private String name;
   private String email;
-  private String specialization;
+
+  @Enumerated(EnumType.STRING)
+  private Specialization specialization;
+
   private String schedule;
 
   @OneToOne(cascade = CascadeType.ALL)
