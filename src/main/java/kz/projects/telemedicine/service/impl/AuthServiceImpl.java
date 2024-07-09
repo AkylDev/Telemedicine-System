@@ -72,7 +72,6 @@ public class AuthServiceImpl implements AuthService {
     userRepository.save(user);
 
     return patientMapper.toDto(patientRepository.save(patient));
-
   }
 
   @Override
@@ -114,7 +113,6 @@ public class AuthServiceImpl implements AuthService {
     userRepository.save(user);
 
     return doctorMapper.toDto(doctorRepository.save(doctor));
-
   }
 
   @Override

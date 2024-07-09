@@ -9,6 +9,5 @@ public interface AuthService {
   PatientDTO register(PatientDTO request);
   User login(LoginRequest request);
   DoctorDTO addDoctor(DoctorDTO request);
-
   User getCurrentSessionUser();
 }

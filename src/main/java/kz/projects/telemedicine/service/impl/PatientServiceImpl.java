@@ -45,7 +45,6 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   public List<DoctorDTO> getDoctors() {
-
     return doctorMapper.toDtoList(doctorRepository.findAll());
   }
 
@@ -72,8 +71,8 @@ public class PatientServiceImpl implements PatientService {
     Doctor doctor = doctorOptional.get();
     appointment.setDoctor(doctor);
 
-    patient.setMedicalHistory(patient.getMedicalHistory() + "\n" + appointmentRequest.getInfo());
-    patientRepository.save(patient);
+    appointment.getPatient()
+            .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
 
     Appointment savedAppointment = appointmentsRepository.save(appointment);
     return appointmentMapper.toResponseDto(savedAppointment);
@@ -97,6 +96,7 @@ public class PatientServiceImpl implements PatientService {
     appointment.getPatient()
             .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
     Appointment savedAppointment = appointmentsRepository.save(appointment);
+
     return appointmentMapper.toResponseDto(savedAppointment);
   }
 
