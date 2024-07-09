@@ -1,10 +1,12 @@
 package kz.projects.telemedicine.service.impl;
 
 import jakarta.transaction.Transactional;
+import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.DoctorNotFoundException;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.exceptions.UnauthorizedException;
+import kz.projects.telemedicine.mapper.AppointmentMapper;
 import kz.projects.telemedicine.model.*;
 import kz.projects.telemedicine.repositories.AppointmentsRepository;
 import kz.projects.telemedicine.repositories.DoctorRepository;
@@ -30,6 +32,8 @@ public class PatientServiceImpl implements PatientService {
 
   private final AuthService authService;
 
+  private final AppointmentMapper appointmentMapper;
+
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
@@ -49,14 +53,18 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   @Transactional
-  public Appointment makeAppointment(Appointment appointmentRequest) {
-    Optional<Patient> patientOptional = patientRepository.findByEmail(getCurrentUser().getEmail());
+  public AppointmentDTO makeAppointment(AppointmentDTO appointmentRequest) {
+    String currentUserEmail = getCurrentUser().getEmail();
+
+    Optional<Patient> patientOptional = patientRepository.findByEmail(currentUserEmail);
     if (patientOptional.isEmpty()) {
       throw new PatientNotFoundException("Patient not found");
     }
     Patient patient = patientOptional.get();
-    appointmentRequest.setPatient(patient);
-    appointmentRequest.setStatus(AppointmentStatus.SCHEDULED);
+
+    Appointment appointment = appointmentMapper.toModel(appointmentRequest);
+    appointment.setPatient(patient);
+    appointment.setStatus(AppointmentStatus.SCHEDULED);
 
     Optional<Doctor> doctorOptional = doctorRepository.findById(appointmentRequest.getDoctor().getId());
     if (doctorOptional.isEmpty()) {
@@ -64,16 +72,17 @@ public class PatientServiceImpl implements PatientService {
     }
 
     Doctor doctor = doctorOptional.get();
-    appointmentRequest.setDoctor(doctor);
+    appointment.setDoctor(doctor);
 
     patient.setMedicalHistory(patient.getMedicalHistory() + "\n" + appointmentRequest.getInfo());
     patientRepository.save(patient);
 
-    return appointmentsRepository.save(appointmentRequest);
+    Appointment savedAppointment = appointmentsRepository.save(appointment);
+    return appointmentMapper.toResponseDto(savedAppointment);
   }
 
   @Override
-  public Appointment changeAppointment(Long id) {
+  public AppointmentDTO changeAppointment(Long id) {
     Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
 
     if (appointmentOptional.isEmpty()) {
@@ -89,8 +98,8 @@ public class PatientServiceImpl implements PatientService {
     appointment.setStatus(AppointmentStatus.RESCHEDULED);
     appointment.getPatient()
             .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
-    return appointmentsRepository.save(appointment);
-
+    Appointment savedAppointment = appointmentsRepository.save(appointment);
+    return appointmentMapper.toResponseDto(savedAppointment);
   }
 
   @Override
@@ -114,12 +123,14 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  public List<Appointment> getAppointments() {
+  public List<AppointmentDTO> getAppointments() {
     Optional<Patient> patientOptional = patientRepository.findByEmail(getCurrentUser().getEmail());
-    if (patientOptional.isEmpty()){
+    if (patientOptional.isEmpty()) {
       throw new PatientNotFoundException("Patient not found");
     }
     Patient currentPatient = patientOptional.get();
-    return appointmentsRepository.findAllByPatient(currentPatient);
+
+    List<Appointment> appointments = appointmentsRepository.findAllByPatient(currentPatient);
+    return appointmentMapper.toDtoList(appointments);
   }
 }

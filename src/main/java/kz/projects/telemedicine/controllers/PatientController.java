@@ -1,6 +1,6 @@
 package kz.projects.telemedicine.controllers;
 
-import kz.projects.telemedicine.model.Appointment;
+import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,17 +23,18 @@ public class PatientController {
   }
 
   @PostMapping
-  public ResponseEntity<Appointment> makeAppointment(@RequestBody Appointment appointment){
-    return new ResponseEntity<>(patientService.makeAppointment(appointment), HttpStatus.CREATED);
+  public ResponseEntity<AppointmentDTO> makeAppointment(@RequestBody AppointmentDTO appointment){
+    AppointmentDTO createdAppointment = patientService.makeAppointment(appointment);
+    return new ResponseEntity<>(createdAppointment, HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  private ResponseEntity<Appointment> changeAppointment(@PathVariable(name = "id") Long id){
+  private ResponseEntity<AppointmentDTO> changeAppointment(@PathVariable(name = "id") Long id){
     return new ResponseEntity<>(patientService.changeAppointment(id), HttpStatus.OK);
   }
 
   @GetMapping
-  public ResponseEntity<List<Appointment>> getAppointments(){
+  public ResponseEntity<List<AppointmentDTO>> getAppointments(){
     return new ResponseEntity<>(patientService.getAppointments(), HttpStatus.OK);
   }
 
