@@ -1,7 +1,7 @@
 package kz.projects.telemedicine.service;
 
 import kz.projects.telemedicine.dto.ChangeRecordRequest;
-import kz.projects.telemedicine.model.Prescriptions;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface DoctorService {
 
   String changePatientRecord(Long id, ChangeRecordRequest request);
 
-  Prescriptions makePrescription(Long id, Prescriptions prescriptions);
+  PrescriptionDTO makePrescription(Long id, PrescriptionDTO prescriptions);
 
-  List<Prescriptions> getPatientPrescriptions(Long id);
+  List<PrescriptionDTO> getPatientPrescriptions(Long id);
 }

@@ -1,7 +1,7 @@
 package kz.projects.telemedicine.controllers;
 
 import kz.projects.telemedicine.dto.ChangeRecordRequest;
-import kz.projects.telemedicine.model.Prescriptions;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,14 +28,14 @@ public class DoctorController {
   }
 
   @PostMapping("/{id}/prescriptions")
-  public ResponseEntity<Prescriptions> makePrescription(@PathVariable(name = "id") Long id,
-                                                        @RequestBody Prescriptions prescriptions){
+  public ResponseEntity<PrescriptionDTO> makePrescription(@PathVariable(name = "id") Long id,
+                                                          @RequestBody PrescriptionDTO prescriptions){
     return new ResponseEntity<>(doctorService.makePrescription(id, prescriptions), HttpStatus.CREATED);
   }
 
   @GetMapping("/{id}/prescriptions")
-  public ResponseEntity<List<Prescriptions>> getPrescription(@PathVariable(name = "id") Long id){
-    return new ResponseEntity<>(doctorService.getPatientPrescriptions(id), HttpStatus.CREATED);
+  public ResponseEntity<List<PrescriptionDTO>> getPrescription(@PathVariable(name = "id") Long id){
+    return new ResponseEntity<>(doctorService.getPatientPrescriptions(id), HttpStatus.OK);
   }
 
 }

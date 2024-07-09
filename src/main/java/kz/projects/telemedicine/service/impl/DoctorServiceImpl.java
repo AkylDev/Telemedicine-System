@@ -1,7 +1,10 @@
 package kz.projects.telemedicine.service.impl;
 
+import jakarta.transaction.Transactional;
 import kz.projects.telemedicine.dto.ChangeRecordRequest;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
+import kz.projects.telemedicine.mapper.PrescriptionMapper;
 import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.model.Prescriptions;
@@ -28,6 +31,8 @@ public class DoctorServiceImpl implements DoctorService {
   private final PrescriptionsRepository prescriptionsRepository;
 
   private final AuthService authService;
+
+  private final PrescriptionMapper prescriptionMapper;
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
@@ -57,28 +62,36 @@ public class DoctorServiceImpl implements DoctorService {
   }
 
   @Override
-  public Prescriptions makePrescription(Long id, Prescriptions prescriptions) {
+  @Transactional
+  public PrescriptionDTO makePrescription(Long id, PrescriptionDTO prescriptionDTO) {
     Optional<Doctor> doctorOptional = doctorRepository.findByEmail(getCurrentUser().getEmail());
     Optional<Patient> patientOptional = patientRepository.findById(id);
+
     if (patientOptional.isPresent() && doctorOptional.isPresent()){
       Doctor doctor = doctorOptional.get();
-      prescriptions.setDoctor(doctor);
-
       Patient patient = patientOptional.get();
-      prescriptions.setPatient(patient);
 
-      return prescriptionsRepository.save(prescriptions);
+      Prescriptions prescription = new Prescriptions();
+      prescription.setDoctor(doctor);
+      prescription.setPatient(patient);
+
+      prescription.setMedication(prescriptionDTO.getMedication());
+      prescription.setDosage(prescriptionDTO.getDosage());
+      prescription.setDuration(prescriptionDTO.getDuration());
+
+      return prescriptionMapper.toDto(prescriptionsRepository.save(prescription));
     } else {
       throw new PatientNotFoundException("Patient not found");
     }
   }
 
   @Override
-  public List<Prescriptions> getPatientPrescriptions(Long id) {
+  public List<PrescriptionDTO> getPatientPrescriptions(Long id) {
     Optional<Patient> patientOptional = patientRepository.findById(id);
     if (patientOptional.isPresent()){
       Patient patient = patientOptional.get();
-      return prescriptionsRepository.findAllByPatient(patient).orElseThrow();
+      List<Prescriptions> prescriptions = prescriptionsRepository.findAllByPatient(patient).orElseThrow();
+      return prescriptionMapper.toDtoList(prescriptions);
     } else {
       throw new PatientNotFoundException("Patient not found");
     }
