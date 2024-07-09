@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +30,11 @@ public class PatientController {
   @PutMapping("/{id}")
   private ResponseEntity<Appointment> changeAppointment(@PathVariable(name = "id") Long id){
     return new ResponseEntity<>(patientService.changeAppointment(id), HttpStatus.OK);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<Appointment>> getAppointments(){
+    return new ResponseEntity<>(patientService.getAppointments(), HttpStatus.OK);
   }
 
   @DeleteMapping("/{id}")

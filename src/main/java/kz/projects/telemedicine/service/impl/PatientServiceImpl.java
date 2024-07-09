@@ -27,13 +27,18 @@ public class PatientServiceImpl implements PatientService {
 
   private final AuthService authService;
 
+  public final User getCurrentUser(){
+    return authService.getCurrentSessionUser();
+  }
+
+
   @Override
   public String getDoctors() {
     List<Doctor> allDoctors = doctorRepository.findAll();
     StringBuilder list = new StringBuilder();
 
     for (Doctor doc : allDoctors) {
-      list.append(doc.getName()).append(" is available at ").append(doc.getSchedule()).append("\n");
+      list.append(doc.getId()).append(doc.getName()).append(" is available at ").append(doc.getSchedule()).append("\n");
     }
 
     return String.valueOf(list);
@@ -41,8 +46,7 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   public Appointment makeAppointment(Appointment appointmentRequest) {
-    User currentUser = authService.getCurrentSessionUser();
-    Patient patient = patientRepository.findByEmail(currentUser.getEmail());
+    Patient patient = patientRepository.findByEmail(getCurrentUser().getEmail());
     appointmentRequest.setPatient(patient);
     appointmentRequest.setStatus(AppointmentStatus.SCHEDULED);
 
@@ -56,9 +60,8 @@ public class PatientServiceImpl implements PatientService {
     if (appointmentOptional.isPresent()) {
       Appointment appointment = appointmentOptional.get();
 
-      User currentUser = authService.getCurrentSessionUser();
 
-      if (!appointment.getPatient().getUser().getEmail().equals(currentUser.getEmail())){
+      if (!appointment.getPatient().getUser().getEmail().equals(getCurrentUser().getEmail())){
         throw new UnauthorizedException("You are not authorized to change this appointment");
       }
 
@@ -76,9 +79,7 @@ public class PatientServiceImpl implements PatientService {
     if (appointmentOptional.isPresent()) {
       Appointment appointment = appointmentOptional.get();
 
-      User currentUser = authService.getCurrentSessionUser();
-
-      if (!appointment.getPatient().getUser().getEmail().equals(currentUser.getEmail())) {
+      if (!appointment.getPatient().getUser().getEmail().equals(getCurrentUser().getEmail())) {
         throw new UnauthorizedException("You are not authorized to cancel this appointment");
       }
 
@@ -86,5 +87,10 @@ public class PatientServiceImpl implements PatientService {
     } else {
       throw new AppointmentNotFoundException("Appointment not found with id " + id);
     }
+  }
+
+  @Override
+  public List<Appointment> getAppointments() {
+    return appointmentsRepository.findAllByPatient(patientRepository.findByEmail(getCurrentUser().getEmail()));
   }
 }
