@@ -1,7 +1,6 @@
 package kz.projects.telemedicine.controllers;
 
 import kz.projects.telemedicine.dto.ChangeRecordRequest;
-import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.model.Prescriptions;
 import kz.projects.telemedicine.service.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,8 @@ public class DoctorController {
   }
 
   @PutMapping("/{id}/record")
-  public ResponseEntity<Patient> getPatientRecord(@PathVariable(name = "id") Long id,
-                                                  @RequestBody ChangeRecordRequest request){
+  public ResponseEntity<String> getPatientRecord(@PathVariable(name = "id") Long id,
+                                                     @RequestBody ChangeRecordRequest request){
     return new ResponseEntity<>(doctorService.changePatientRecord(id, request), HttpStatus.OK);
   }
 

@@ -28,7 +28,6 @@ public class DoctorServiceImpl implements DoctorService {
   private final PrescriptionsRepository prescriptionsRepository;
 
   private final AuthService authService;
-
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
@@ -36,25 +35,25 @@ public class DoctorServiceImpl implements DoctorService {
   @Override
   public String getPatientRecords(Long id) {
     Optional<Patient> patientOptional = patientRepository.findById(id);
-    if (patientOptional.isPresent()){
-      Patient patient = patientOptional.get();
-      return patient.getName() + "\n" + patient.getMedicalHistory();
-    }else {
+    if (patientOptional.isEmpty()){
       throw new PatientNotFoundException("Patient not found");
     }
+    Patient patient = patientOptional.get();
+    return patient.getMedicalHistory();
   }
 
   @Override
-  public Patient changePatientRecord(Long id, ChangeRecordRequest request) {
+  public String changePatientRecord(Long id, ChangeRecordRequest request) {
     Optional<Patient> patientOptional = patientRepository.findById(id);
-    if (patientOptional.isPresent()){
-      Patient patient = patientOptional.get();
-      patient.setMedicalHistory(request.getRecord());
-      patientRepository.save(patient);
-      return patient;
-    }else {
+    if (patientOptional.isEmpty()){
       throw new PatientNotFoundException("Patient not found");
     }
+    Patient patient = patientOptional.get();
+    patient.setMedicalHistory(request.getRecord());
+    patientRepository.save(patient);
+
+    return patient.getMedicalHistory();
+
   }
 
   @Override
