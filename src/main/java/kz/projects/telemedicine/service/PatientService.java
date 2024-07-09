@@ -7,4 +7,7 @@ public interface PatientService {
   String getDoctors();
 
   Appointment makeAppointment(Appointment appointment);
+  Appointment changeAppointment(Long id);
+
+  void cancelAppointment(Long id);
 }

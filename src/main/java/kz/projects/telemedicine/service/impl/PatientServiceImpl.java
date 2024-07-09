@@ -1,9 +1,8 @@
 package kz.projects.telemedicine.service.impl;
 
-import kz.projects.telemedicine.model.Appointment;
-import kz.projects.telemedicine.model.Doctor;
-import kz.projects.telemedicine.model.Patient;
-import kz.projects.telemedicine.model.User;
+import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
+import kz.projects.telemedicine.exceptions.UnauthorizedException;
+import kz.projects.telemedicine.model.*;
 import kz.projects.telemedicine.repositories.AppointmentsRepository;
 import kz.projects.telemedicine.repositories.DoctorRepository;
 import kz.projects.telemedicine.repositories.PatientRepository;
@@ -13,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -32,7 +32,7 @@ public class PatientServiceImpl implements PatientService {
     List<Doctor> allDoctors = doctorRepository.findAll();
     StringBuilder list = new StringBuilder();
 
-    for (Doctor doc : allDoctors){
+    for (Doctor doc : allDoctors) {
       list.append(doc.getName()).append(" is available at ").append(doc.getSchedule()).append("\n");
     }
 
@@ -44,7 +44,47 @@ public class PatientServiceImpl implements PatientService {
     User currentUser = authService.getCurrentSessionUser();
     Patient patient = patientRepository.findByEmail(currentUser.getEmail());
     appointmentRequest.setPatient(patient);
+    appointmentRequest.setStatus(AppointmentStatus.SCHEDULED);
 
     return appointmentsRepository.save(appointmentRequest);
+  }
+
+  @Override
+  public Appointment changeAppointment(Long id) {
+    Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
+
+    if (appointmentOptional.isPresent()) {
+      Appointment appointment = appointmentOptional.get();
+
+      User currentUser = authService.getCurrentSessionUser();
+
+      if (!appointment.getPatient().getUser().getEmail().equals(currentUser.getEmail())){
+        throw new UnauthorizedException("You are not authorized to change this appointment");
+      }
+
+      appointment.setStatus(AppointmentStatus.RESCHEDULED);
+      return appointmentsRepository.save(appointment);
+    } else {
+      throw new AppointmentNotFoundException("Appointment not found with id " + id);
+    }
+  }
+
+  @Override
+  public void cancelAppointment(Long id) {
+    Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
+
+    if (appointmentOptional.isPresent()) {
+      Appointment appointment = appointmentOptional.get();
+
+      User currentUser = authService.getCurrentSessionUser();
+
+      if (!appointment.getPatient().getUser().getEmail().equals(currentUser.getEmail())) {
+        throw new UnauthorizedException("You are not authorized to cancel this appointment");
+      }
+
+      appointmentsRepository.deleteById(id);
+    } else {
+      throw new AppointmentNotFoundException("Appointment not found with id " + id);
+    }
   }
 }

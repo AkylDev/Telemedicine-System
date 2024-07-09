@@ -24,4 +24,15 @@ public class PatientController {
   public ResponseEntity<Appointment> makeAppointment(@RequestBody Appointment appointment){
     return new ResponseEntity<>(patientService.makeAppointment(appointment), HttpStatus.CREATED);
   }
+
+  @PutMapping("/{id}")
+  private ResponseEntity<Appointment> changeAppointment(@PathVariable(name = "id") Long id){
+    return new ResponseEntity<>(patientService.changeAppointment(id), HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> cancelAppointment(@PathVariable(name = "id") Long id) {
+    patientService.cancelAppointment(id);
+    return ResponseEntity.noContent().build();
+  }
 }
