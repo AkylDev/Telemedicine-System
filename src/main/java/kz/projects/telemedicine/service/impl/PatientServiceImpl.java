@@ -96,7 +96,7 @@ public class PatientServiceImpl implements PatientService {
       }
       appointment.setStatus(AppointmentStatus.CANCELLED);
       appointment.getPatient()
-              .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n " + appointment.getInfo());
+              .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
 
       appointmentsRepository.deleteById(id);
     } else {

@@ -42,6 +42,7 @@ public class SecurityConfig {
                     authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE).permitAll()
                             .requestMatchers("/swagger-ui/index.html").permitAll()
                             .requestMatchers("/auth/**").permitAll()
+                            .requestMatchers("/patients/**").hasRole("DOCTOR")
                             .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer

@@ -31,6 +31,6 @@ public class Appointment {
   private AppointmentStatus status;
 
   public String getInfo() {
-    return "Dr. " + doctor.getName() + " on " + date + " at " + time + " -: " + status;
+    return "Dr. " + doctor.getName() + " on " + date + " at " + time + " -> " + status;
   }
 }
