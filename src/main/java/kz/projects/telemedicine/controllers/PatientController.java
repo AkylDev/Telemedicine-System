@@ -1,6 +1,5 @@
 package kz.projects.telemedicine.controllers;
 
-import kz.projects.telemedicine.dto.AppointmentRequest;
 import kz.projects.telemedicine.model.Appointment;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class PatientController {
   }
 
   @PostMapping
-  public ResponseEntity<Appointment> makeAppointment(@RequestBody AppointmentRequest appointment){
+  public ResponseEntity<Appointment> makeAppointment(@RequestBody Appointment appointment){
     return new ResponseEntity<>(patientService.makeAppointment(appointment), HttpStatus.CREATED);
   }
 }

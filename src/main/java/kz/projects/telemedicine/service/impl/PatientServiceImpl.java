@@ -1,6 +1,5 @@
 package kz.projects.telemedicine.service.impl;
 
-import kz.projects.telemedicine.dto.AppointmentRequest;
 import kz.projects.telemedicine.model.Appointment;
 import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
@@ -41,17 +40,11 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  public Appointment makeAppointment(AppointmentRequest appointmentRequest) {
-    Appointment appointment = new Appointment();
-    appointment.setDoctor(appointmentRequest.getDoctor());
-    appointment.setDate(appointmentRequest.getDate());
-    appointment.setTime(appointmentRequest.getTime());
-    appointment.setStatus(appointmentRequest.getStatus());
-
+  public Appointment makeAppointment(Appointment appointmentRequest) {
     User currentUser = authService.getCurrentSessionUser();
     Patient patient = patientRepository.findByEmail(currentUser.getEmail());
-    appointment.setPatient(patient);
+    appointmentRequest.setPatient(patient);
 
-    return appointmentsRepository.save(appointment);
+    return appointmentsRepository.save(appointmentRequest);
   }
 }
