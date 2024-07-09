@@ -1,6 +1,7 @@
 package kz.projects.telemedicine.controllers;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
+import kz.projects.telemedicine.dto.DoctorDTO;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class PatientController {
   private final PatientService patientService;
 
   @GetMapping(value = "/doctors")
-  public ResponseEntity<String> getDoctors(){
+  public ResponseEntity<List<DoctorDTO>> getDoctors(){
     return new ResponseEntity<>(patientService.getDoctors(), HttpStatus.OK);
   }
 

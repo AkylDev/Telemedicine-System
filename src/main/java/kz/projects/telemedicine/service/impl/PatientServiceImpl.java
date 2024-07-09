@@ -2,11 +2,13 @@ package kz.projects.telemedicine.service.impl;
 
 import jakarta.transaction.Transactional;
 import kz.projects.telemedicine.dto.AppointmentDTO;
+import kz.projects.telemedicine.dto.DoctorDTO;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.DoctorNotFoundException;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.exceptions.UnauthorizedException;
 import kz.projects.telemedicine.mapper.AppointmentMapper;
+import kz.projects.telemedicine.mapper.DoctorMapper;
 import kz.projects.telemedicine.model.*;
 import kz.projects.telemedicine.repositories.AppointmentsRepository;
 import kz.projects.telemedicine.repositories.DoctorRepository;
@@ -34,21 +36,17 @@ public class PatientServiceImpl implements PatientService {
 
   private final AppointmentMapper appointmentMapper;
 
+  private final DoctorMapper doctorMapper;
+
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
 
 
   @Override
-  public String getDoctors() {
-    List<Doctor> allDoctors = doctorRepository.findAll();
-    StringBuilder list = new StringBuilder();
+  public List<DoctorDTO> getDoctors() {
 
-    for (Doctor doc : allDoctors) {
-      list.append(doc.getId()).append(doc.getName()).append(" is available at ").append(doc.getSchedule()).append("\n");
-    }
-
-    return String.valueOf(list);
+    return doctorMapper.toDtoList(doctorRepository.findAll());
   }
 
   @Override
