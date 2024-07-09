@@ -16,7 +16,7 @@ import java.time.LocalTime;
 public class AppointmentDTO {
   private Long id;
   private PatientDTO patient;
-  private DoctorRequest doctor;
+  private DoctorDTO doctor;
   private LocalDate date;
   private LocalTime time;
   private AppointmentStatus status;

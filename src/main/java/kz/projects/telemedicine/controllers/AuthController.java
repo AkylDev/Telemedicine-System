@@ -1,6 +1,6 @@
 package kz.projects.telemedicine.controllers;
 
-import kz.projects.telemedicine.dto.DoctorRequest;
+import kz.projects.telemedicine.dto.DoctorDTO;
 import kz.projects.telemedicine.dto.LoginRequest;
 import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.service.AuthService;
@@ -37,8 +37,8 @@ public class AuthController {
   }
 
   @PostMapping("/add-doctor")
-  public ResponseEntity<DoctorRequest> addDoctor(@RequestBody DoctorRequest request) {
-    DoctorRequest doctor = authService.addDoctor(request);
+  public ResponseEntity<DoctorDTO> addDoctor(@RequestBody DoctorDTO request) {
+    DoctorDTO doctor = authService.addDoctor(request);
     return new ResponseEntity<>(doctor, HttpStatus.CREATED);
   }
 
