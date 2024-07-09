@@ -2,7 +2,7 @@ package kz.projects.telemedicine.controllers;
 
 import kz.projects.telemedicine.dto.DoctorRequest;
 import kz.projects.telemedicine.dto.LoginRequest;
-import kz.projects.telemedicine.dto.RegisterRequest;
+import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/register")
-  public ResponseEntity<RegisterRequest> register(@RequestBody RegisterRequest request) {
-    RegisterRequest patient = authService.register(request);
+  public ResponseEntity<PatientDTO> register(@RequestBody PatientDTO request) {
+    PatientDTO patient = authService.register(request);
     return new ResponseEntity<>(patient, HttpStatus.CREATED);
   }
 

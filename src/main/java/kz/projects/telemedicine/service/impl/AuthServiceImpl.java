@@ -2,7 +2,7 @@ package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.dto.DoctorRequest;
 import kz.projects.telemedicine.dto.LoginRequest;
-import kz.projects.telemedicine.dto.RegisterRequest;
+import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.mapper.DoctorMapper;
 import kz.projects.telemedicine.mapper.PatientMapper;
 import kz.projects.telemedicine.model.Doctor;
@@ -47,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
   private final PatientMapper patientMapper;
 
   @Override
-  public RegisterRequest register(RegisterRequest registerRequest) {
+  public PatientDTO register(PatientDTO registerRequest) {
     User checkUser = userRepository.findByEmail(registerRequest.getEmail());
     if (checkUser != null) {
       throw new IllegalArgumentException("User with this email already exists.");
