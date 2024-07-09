@@ -3,6 +3,8 @@ package kz.projects.telemedicine.service.impl;
 import kz.projects.telemedicine.dto.DoctorRequest;
 import kz.projects.telemedicine.dto.LoginRequest;
 import kz.projects.telemedicine.dto.RegisterRequest;
+import kz.projects.telemedicine.mapper.DoctorMapper;
+import kz.projects.telemedicine.mapper.PatientMapper;
 import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.model.Permissions;
@@ -40,37 +42,37 @@ public class AuthServiceImpl implements AuthService {
 
   private final DoctorRepository doctorRepository;
 
+  private final DoctorMapper doctorMapper;
+
+  private final PatientMapper patientMapper;
+
   @Override
-  public Patient register(RegisterRequest registerRequest) {
+  public RegisterRequest register(RegisterRequest registerRequest) {
     User checkUser = userRepository.findByEmail(registerRequest.getEmail());
-
-    if(checkUser==null){
-      User user = new User();
-      user.setEmail(registerRequest.getEmail());
-      user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-
-      Permissions defaultPermission = permissionRepository.findByRole("ROLE_PATIENT");
-      if (defaultPermission == null) {
-        defaultPermission = new Permissions();
-        defaultPermission.setRole("ROLE_PATIENT");
-        defaultPermission = permissionRepository.save(defaultPermission);
-      }
-      user.setPermissionList(Collections.singletonList(defaultPermission));
-
-      Patient patient = new Patient();
-      patient.setName(registerRequest.getName());
-      patient.setEmail(registerRequest.getEmail());
-      patient.setPhone(registerRequest.getPhone());
-      patient.setMedicalHistory("");
-
-      patient.setUser(user);
-      userRepository.save(user);
-
-      return patientRepository.save(patient);
+    if (checkUser != null) {
+      throw new IllegalArgumentException("User with this email already exists.");
     }
-    else {
-      return null;
+
+    User user = new User();
+    user.setEmail(registerRequest.getEmail());
+    user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+
+    Permissions defaultPermission = permissionRepository.findByRole("ROLE_PATIENT");
+    if (defaultPermission == null) {
+      defaultPermission = new Permissions();
+      defaultPermission.setRole("ROLE_PATIENT");
+      defaultPermission = permissionRepository.save(defaultPermission);
     }
+    user.setPermissionList(Collections.singletonList(defaultPermission));
+
+    Patient patient = patientMapper.toModel(registerRequest);
+    patient.setMedicalHistory("");
+    patient.setUser(user);
+
+    userRepository.save(user);
+
+    return patientMapper.toDto(patientRepository.save(patient));
+
   }
 
   @Override
@@ -88,46 +90,38 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public Doctor addDoctor(DoctorRequest doctorRequest) {
+  public DoctorRequest addDoctor(DoctorRequest doctorRequest) {
     User checkUser = userRepository.findByEmail(doctorRequest.getEmail());
-
-    if(checkUser==null){
-      User user = new User();
-      user.setEmail(doctorRequest.getEmail());
-      user.setPassword(passwordEncoder.encode(doctorRequest.getPassword()));
-
-      Permissions defaultPermission = permissionRepository.findByRole("ROLE_DOCTOR");
-      if (defaultPermission == null) {
-        defaultPermission = new Permissions();
-        defaultPermission.setRole("ROLE_DOCTOR");
-        defaultPermission = permissionRepository.save(defaultPermission);
-      }
-      user.setPermissionList(Collections.singletonList(defaultPermission));
-
-      Doctor doctor = new Doctor();
-      doctor.setName(doctorRequest.getName());
-      doctor.setEmail(doctorRequest.getEmail());
-      doctor.setSpecialization(doctorRequest.getSpecialization());
-      doctor.setSchedule(doctorRequest.getSchedule());
-      doctor.setUser(user);
-
-      userRepository.save(user);
-
-      return doctorRepository.save(doctor);
+    if (checkUser != null) {
+      throw new IllegalArgumentException("User with this email already exists.");
     }
-    else {
-      return null;
+
+    User user = new User();
+    user.setEmail(doctorRequest.getEmail());
+    user.setPassword(passwordEncoder.encode(doctorRequest.getPassword()));
+
+    Permissions defaultPermission = permissionRepository.findByRole("ROLE_DOCTOR");
+    if (defaultPermission == null) {
+      defaultPermission = new Permissions();
+      defaultPermission.setRole("ROLE_DOCTOR");
+      defaultPermission = permissionRepository.save(defaultPermission);
     }
+    user.setPermissionList(Collections.singletonList(defaultPermission));
+
+    Doctor doctor = doctorMapper.toModel(doctorRequest);
+    doctor.setUser(user);
+
+    userRepository.save(user);
+
+    return doctorMapper.toDto(doctorRepository.save(doctor));
+
   }
 
   @Override
   public User getCurrentSessionUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-      User myUserDetails = (User) authentication.getPrincipal();
-      if (myUserDetails != null) {
-        return myUserDetails;
-      }
+      return (User) authentication.getPrincipal();
     }
     return null;
   }
