@@ -11,4 +11,6 @@ public interface AuthService {
   Patient register(RegisterRequest request);
   User login(LoginRequest request);
   Doctor addDoctor(DoctorRequest request);
+
+  User getCurrentSessionUser();
 }

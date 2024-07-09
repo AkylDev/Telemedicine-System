@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Table(name = "t_appointments")
-public class Appointments {
+public class Appointment {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -26,5 +26,7 @@ public class Appointments {
 
   private LocalDate date;
   private LocalTime time;
-  private String status;
+
+  @Enumerated(EnumType.STRING)
+  private AppointmentStatus status;
 }

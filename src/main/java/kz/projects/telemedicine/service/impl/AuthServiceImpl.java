@@ -13,7 +13,9 @@ import kz.projects.telemedicine.repositories.PermissionsRepository;
 import kz.projects.telemedicine.repositories.UserRepository;
 import kz.projects.telemedicine.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -116,6 +118,18 @@ public class AuthServiceImpl implements AuthService {
     else {
       return null;
     }
+  }
+
+  @Override
+  public User getCurrentSessionUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+      User myUserDetails = (User) authentication.getPrincipal();
+      if (myUserDetails != null) {
+        return myUserDetails;
+      }
+    }
+    return null;
   }
 
 }
