@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
       patient.setName(registerRequest.getName());
       patient.setEmail(registerRequest.getEmail());
       patient.setPhone(registerRequest.getPhone());
-      patient.setMedicalHistory(registerRequest.getMedicalHistory());
+      patient.setMedicalHistory("");
 
       patient.setUser(user);
       userRepository.save(user);

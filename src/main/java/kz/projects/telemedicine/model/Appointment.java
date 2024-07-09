@@ -29,4 +29,8 @@ public class Appointment {
 
   @Enumerated(EnumType.STRING)
   private AppointmentStatus status;
+
+  public String getInfo() {
+    return "Dr. " + doctor.getName() + " on " + date + " at " + time + " -: " + status;
+  }
 }

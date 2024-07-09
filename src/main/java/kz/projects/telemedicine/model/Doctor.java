@@ -14,6 +14,8 @@ public class Doctor {
   private Long id;
 
   private String name;
+
+  @Column(unique = true)
   private String email;
 
   @Enumerated(EnumType.STRING)

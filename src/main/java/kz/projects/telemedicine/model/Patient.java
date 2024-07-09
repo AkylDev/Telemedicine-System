@@ -19,6 +19,7 @@ public class Patient {
   private String email;
 
   private String phone;
+
   private String medicalHistory;
 
   @OneToOne(cascade = CascadeType.ALL)

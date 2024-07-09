@@ -1,6 +1,7 @@
 package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
+import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.exceptions.UnauthorizedException;
 import kz.projects.telemedicine.model.*;
 import kz.projects.telemedicine.repositories.AppointmentsRepository;
@@ -46,11 +47,21 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   public Appointment makeAppointment(Appointment appointmentRequest) {
-    Patient patient = patientRepository.findByEmail(getCurrentUser().getEmail());
-    appointmentRequest.setPatient(patient);
-    appointmentRequest.setStatus(AppointmentStatus.SCHEDULED);
+    Optional<Patient> patientOptional = patientRepository.findByEmail(getCurrentUser().getEmail());
 
-    return appointmentsRepository.save(appointmentRequest);
+    if (patientOptional.isPresent()){
+      Patient patient = patientOptional.get();
+      appointmentRequest.setPatient(patient);
+      appointmentRequest.setStatus(AppointmentStatus.SCHEDULED);
+
+      patient.setMedicalHistory(patient.getMedicalHistory() + "\n" + appointmentRequest.getInfo());
+      patientRepository.save(patient);
+
+      return appointmentsRepository.save(appointmentRequest);
+    }else {
+      throw new PatientNotFoundException("Patient not found");
+    }
+
   }
 
   @Override
@@ -60,12 +71,13 @@ public class PatientServiceImpl implements PatientService {
     if (appointmentOptional.isPresent()) {
       Appointment appointment = appointmentOptional.get();
 
-
       if (!appointment.getPatient().getUser().getEmail().equals(getCurrentUser().getEmail())){
         throw new UnauthorizedException("You are not authorized to change this appointment");
       }
 
       appointment.setStatus(AppointmentStatus.RESCHEDULED);
+      appointment.getPatient()
+              .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
       return appointmentsRepository.save(appointment);
     } else {
       throw new AppointmentNotFoundException("Appointment not found with id " + id);
@@ -82,6 +94,9 @@ public class PatientServiceImpl implements PatientService {
       if (!appointment.getPatient().getUser().getEmail().equals(getCurrentUser().getEmail())) {
         throw new UnauthorizedException("You are not authorized to cancel this appointment");
       }
+      appointment.setStatus(AppointmentStatus.CANCELLED);
+      appointment.getPatient()
+              .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n " + appointment.getInfo());
 
       appointmentsRepository.deleteById(id);
     } else {
@@ -91,6 +106,12 @@ public class PatientServiceImpl implements PatientService {
 
   @Override
   public List<Appointment> getAppointments() {
-    return appointmentsRepository.findAllByPatient(patientRepository.findByEmail(getCurrentUser().getEmail()));
+    Optional<Patient> patientOptional = patientRepository.findByEmail(getCurrentUser().getEmail());
+    if (patientOptional.isPresent()){
+      Patient currentPatient = patientOptional.get();
+      return appointmentsRepository.findAllByPatient(currentPatient);
+    }else {
+      throw new PatientNotFoundException("Patient not found");
+    }
   }
 }
