@@ -58,7 +58,6 @@ public class DoctorServiceImpl implements DoctorService {
     patientRepository.save(patient);
 
     return patient.getMedicalHistory();
-
   }
 
   @Override
