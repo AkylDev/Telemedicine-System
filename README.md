@@ -1,133 +1,76 @@
 # Telemedicine System
 
-## Description
+## Overview
 
-The Telemedicine System is a Java-based application developed using Spring technologies. It facilitates online consultations between doctors and patients, manages patient health records, handles prescription management, and provides a secure platform for communication.
+The Telemedicine System is a comprehensive Java-based application developed using Spring technologies. It aims to revolutionize healthcare delivery by providing a platform for online consultations, managing patient health records, handling prescription management, and enabling seamless communication between doctors and patients.
 
-## Business Case
+## Key Features
 
-Telemedicine systems play a crucial role in modern healthcare by improving accessibility and efficiency. This project aims to provide developers with insights into essential features of telemedicine systems, focusing on security, data integrity, and user interaction.
+### For Patients
 
-## Architecture & Technologies Used
+- **User Registration and Authentication**: Patients can securely register and log in to the system.
+- **Doctor Discovery**: View available doctors, their specialties, and schedules.
+- **Appointment Management**: Book, reschedule, and cancel appointments with doctors online.
+- **Consultation Interface**: Communicate with doctors via secure, real-time messaging during consultations.
+- **Medical Records**: Access and update personal medical records, including viewing prescriptions and medical history.
 
-### Backend Framework
+### For Doctors
 
-- **Spring Boot**: Facilitates rapid development and deployment of Java applications.
+- **Secure Login**: Access the system securely with authentication.
+- **Schedule Management**: View and manage consultation schedules.
+- **Consultation Tools**: Conduct online consultations with access to patient medical histories.
+- **Prescription Management**: Write and manage prescriptions directly within the system.
+- **Medical Record Updates**: Update patient medical records after consultations.
 
-### Security
+### System-wide
 
-- **Spring Security**: Provides authentication and secures API endpoints.
+- **Authentication and Security**: Utilizes Spring Security for robust authentication and session management, ensuring data privacy and user confidentiality.
+- **Database Integration**: Integrated with PostgreSQL via Spring Data JPA, ensuring efficient data management and persistence.
+- **RESTful API**: Implements RESTful services using Spring Web, providing a scalable and flexible API for seamless integration with frontend or other systems.
+- **Real-time Updates**: Provides real-time updates on appointment statuses and ensures timely feedback to users.
 
-### Data Handling
+## Business Benefits
 
-- **Spring Data JPA**: Simplifies data access and persistence.
-
-### API
-
-- **RESTful services using Spring Web**: Processes data for doctors and patients.
-
-### Database Schema
-
-- **Patients**: id, name, email, phone, medical_history
-- **Doctors**: id, name, specialization, schedule
-- **Appointments**: id, patient_id, doctor_id, date, time, status
-- **Prescriptions**: id, patient_id, doctor_id, medication, dosage, duration
-
-## User Stories
-
-### Patients
-
-- Register and log in to the system.
-- View available doctors and their schedules.
-- Book online consultations.
-- Communicate with doctors during consultations.
-- Receive and view prescriptions and medical records.
-
-### Doctors
-
-- Log in to the system.
-- View their schedules.
-- Conduct online consultations.
-- Access patient medical history.
-- Write prescriptions and update medical records.
-
-### System Requirements
-
-- Validate user credentials securely.
-- Manage user sessions to ensure data protection.
-- Process appointments and prescriptions accurately and securely.
-- Provide real-time updates on appointment statuses.
+- **Accessibility**: Improves access to healthcare services, particularly in remote or underserved areas.
+- **Efficiency**: Streamlines the appointment booking process, reducing administrative overhead and wait times.
+- **Security**: Ensures data integrity and patient confidentiality through secure authentication and session management.
+- **Scalability**: Designed using Spring Boot, enabling easy scaling and future enhancements.
+- **Compliance**: Adheres to healthcare data regulations and best practices, ensuring legal compliance and trustworthiness.
 
 ## API Endpoints
 
-### Authentication and Session Management
+### Authentication
 
-- **POST /auth/register**: Register a new user.
-- **POST /auth/login**: Authenticate user and create a session.
-- **POST /auth/logout**: Terminate the session.
+- `POST /auth/register`: Register a new user (patient or doctor).
+- `POST /auth/login`: Authenticate user credentials and create a session.
+- `POST /auth/logout`: Terminate the user session.
 
-### Appointment Operations
+### Appointments
 
-- **GET /doctors**: List all doctors and their schedules.
-- **POST /appointments**: Book a new online consultation.
-- **PUT /appointments/{id}**: Reschedule an existing consultation.
-- **DELETE /appointments/{id}**: Cancel a consultation.
-- **GET /appointments**: View consultation history.
+- `GET /doctors`: Retrieve a list of doctors with their schedules.
+- `POST /appointments`: Book a new appointment with a doctor.
+- `PUT /appointments/{id}`: Reschedule an existing appointment.
+- `DELETE /appointments/{id}`: Cancel an appointment.
+- `GET /appointments`: View appointment history for the patient.
 
 ### Medical Records and Prescriptions
 
-- **GET /patients/{id}/records**: View patient's medical records.
-- **PUT /patients/{id}/records**: Update patient's medical records.
-- **GET /patients/{id}/prescriptions**: View patient's prescriptions.
-- **POST /patients/{id}/prescriptions**: Create a new prescription.
+- `GET /patients/{id}/records`: Retrieve the medical records of a patient.
+- `PUT /patients/{id}/records`: Update the medical records of a patient.
+- `GET /patients/{id}/prescriptions`: Retrieve prescriptions issued to a patient.
+- `POST /patients/{id}/prescriptions`: Create a new prescription for a patient.
 
-## Acceptance Criteria
+## Technology Stack
 
-### Spring Boot Application Setup
-
-- Configure a Spring Boot application with Gradle.
-- Include dependencies for Spring Boot, Spring Data JPA, Spring Security, and Spring Web.
-
-### Database and Entity Configuration
-
-- Define JPA entities for Patients, Doctors, Appointments, and Prescriptions.
-- Set up a PostgreSQL database for data storage.
-
-### User Authentication
-
-- Implement secure login functionality using email and password authentication.
-- Manage user sessions securely.
-
-### Appointment and Prescription Processing
-
-- Develop API endpoints to handle appointment bookings, rescheduling, and cancellations.
-- Implement functionalities for doctors to manage patient records and prescriptions.
-
-### API Documentation
-
-- Use Swagger for documenting API endpoints.
-- Include detailed descriptions of request/response models, error messages, and status codes.
-
-### Testing
-
-- Write integration tests to validate critical functionalities.
-- Ensure robust error handling and graceful recovery from exceptions.
+- **Backend**: Java, Spring Boot, Spring Security, Spring Data JPA
+- **Database**: PostgreSQL
+- **API Documentation**: Swagger
 
 ## Getting Started
 
 To run the Telemedicine System locally:
 
 1. Clone this repository.
-2. Set up a PostgreSQL database and configure the connection in `application.properties`.
-3. Build the project using Gradle.
-4. Run the application.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Acknowledgments
-
-- Inspired by the need for accessible healthcare solutions.
-- Thanks to the Spring Boot and Java communities for their robust frameworks and libraries.
-
+2. Configure PostgreSQL database settings in `application.properties`.
+3. Build and run the application using Gradle.
+4. Access the API documentation via Swagger UI (`http://localhost:8090/swagger-ui.html`).
