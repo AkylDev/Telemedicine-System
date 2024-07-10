@@ -217,5 +217,4 @@ public class AuthServiceImplTest {
     verify(userRepository, times(1)).save(any(User.class));
     verify(doctorRepository, times(1)).save(any(Doctor.class));
   }
-
 }
