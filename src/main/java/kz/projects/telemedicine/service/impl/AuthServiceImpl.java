@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
     userRepository.save(user);
     Doctor savedDoctor = doctorRepository.save(doctor);
 
-    return doctorMapper.toDto(doctorRepository.save(savedDoctor));
+    return doctorMapper.toDto(savedDoctor);
   }
 
   @Override

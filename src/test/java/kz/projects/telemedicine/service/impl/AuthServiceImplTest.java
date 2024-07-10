@@ -1,13 +1,15 @@
 package kz.projects.telemedicine.service.impl;
 
+import kz.projects.telemedicine.dto.DoctorDTO;
 import kz.projects.telemedicine.dto.LoginRequest;
 import kz.projects.telemedicine.dto.PatientDTO;
+import kz.projects.telemedicine.mapper.DoctorMapper;
 import kz.projects.telemedicine.mapper.PatientMapper;
 import kz.projects.telemedicine.model.*;
+import kz.projects.telemedicine.repositories.DoctorRepository;
 import kz.projects.telemedicine.repositories.PatientRepository;
 import kz.projects.telemedicine.repositories.PermissionsRepository;
 import kz.projects.telemedicine.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,13 +47,14 @@ public class AuthServiceImplTest {
   @Mock
   private MyUserDetailsService userDetailsService;
 
+  @Mock
+  private DoctorRepository doctorRepository;
+
+  @Mock
+  private DoctorMapper doctorMapper;
+
   @InjectMocks
   private AuthServiceImpl authService;
-
-  @BeforeEach
-  public void setUp() {
-
-  }
 
   @Test
   public void testRegisterPatientSuccessfully() {
@@ -169,6 +172,50 @@ public class AuthServiceImplTest {
     verify(passwordEncoder, times(1)).matches(password, userDetails.getPassword());
   }
 
+  @Test
+  public void testAddDoctor_Successfully() {
+    DoctorDTO doctorRequest = new DoctorDTO();
+    doctorRequest.setName("Dr. John Doe");
+    doctorRequest.setEmail("john.doe@example.com");
+    doctorRequest.setPassword("password123");
+    doctorRequest.setSpecialization(Specialization.DENTIST);
+    doctorRequest.setSchedule("Monday to Friday, 9 AM - 5 PM");
 
+    when(userRepository.findByEmail(doctorRequest.getEmail())).thenReturn(null);
+
+    Permissions defaultPermission = new Permissions();
+    defaultPermission.setId(1L);
+    defaultPermission.setRole("ROLE_DOCTOR");
+    when(permissionRepository.findByRole("ROLE_DOCTOR")).thenReturn(defaultPermission);
+
+    Doctor doctor = new Doctor();
+    doctor.setEmail(doctorRequest.getEmail());
+    doctor.setName(doctorRequest.getName());
+    doctor.setSpecialization(doctorRequest.getSpecialization());
+    doctor.setSchedule(doctorRequest.getSchedule());
+
+    when(doctorRepository.save(doctor)).thenReturn(doctor);
+    when(doctorMapper.toModel(doctorRequest)).thenReturn(doctor);
+    when(doctorMapper.toDto(doctor)).thenReturn(doctorRequest);
+    when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
+
+    User newUser = new User();
+    newUser.setEmail(doctorRequest.getEmail());
+    newUser.setPassword(doctorRequest.getPassword());
+    when(userRepository.save(any(User.class))).thenReturn(newUser);
+
+    DoctorDTO result = authService.addDoctor(doctorRequest);
+
+    assertThat(result).isNotNull();
+    assertEquals(doctorRequest.getEmail(), result.getEmail());
+    assertEquals(doctorRequest.getName(), result.getName());
+    assertEquals(doctorRequest.getSpecialization(), result.getSpecialization());
+    assertEquals(doctorRequest.getSchedule(), result.getSchedule());
+
+    verify(userRepository, times(1)).findByEmail(doctorRequest.getEmail());
+    verify(permissionRepository, times(1)).findByRole("ROLE_DOCTOR");
+    verify(userRepository, times(1)).save(any(User.class));
+    verify(doctorRepository, times(1)).save(any(Doctor.class));
+  }
 
 }
