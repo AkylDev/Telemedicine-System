@@ -38,7 +38,7 @@ public class SecurityConfig {
     http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                     authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE).permitAll()
-                            .requestMatchers("/swagger-ui/index.html").permitAll()
+                            .requestMatchers("/swagger-ui/**").permitAll()
                             .requestMatchers("/auth/**").permitAll()
                             .requestMatchers("/patients/**").hasRole("DOCTOR")
                             .anyRequest().authenticated())
