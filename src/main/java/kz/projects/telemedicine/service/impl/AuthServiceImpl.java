@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,8 +76,9 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public User login(LoginRequest request) {
-    User userDetails = (User) userDetailsService.loadUserByUsername(request.getEmail());
+  public UserDetails login(LoginRequest request) {
+//    User userDetails = (User) userDetailsService.loadUserByUsername(request.getEmail());
+    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
     if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
       UsernamePasswordAuthenticationToken authenticationToken =
               new UsernamePasswordAuthenticationToken(userDetails, null,
@@ -111,8 +113,9 @@ public class AuthServiceImpl implements AuthService {
     doctor.setUser(user);
 
     userRepository.save(user);
+    Doctor savedDoctor = doctorRepository.save(doctor);
 
-    return doctorMapper.toDto(doctorRepository.save(doctor));
+    return doctorMapper.toDto(doctorRepository.save(savedDoctor));
   }
 
   @Override
