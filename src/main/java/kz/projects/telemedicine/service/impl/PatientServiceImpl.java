@@ -3,6 +3,7 @@ package kz.projects.telemedicine.service.impl;
 import jakarta.transaction.Transactional;
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.RescheduleRequest;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.DoctorNotFoundException;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
@@ -79,7 +80,7 @@ public class PatientServiceImpl implements PatientService {
   }
 
   @Override
-  public AppointmentDTO changeAppointment(Long id) {
+  public AppointmentDTO changeAppointment(Long id, RescheduleRequest request) {
     Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
 
     if (appointmentOptional.isEmpty()) {
@@ -93,6 +94,8 @@ public class PatientServiceImpl implements PatientService {
     }
 
     appointment.setStatus(AppointmentStatus.RESCHEDULED);
+    appointment.setDate(request.getDate());
+    appointment.setTime(request.getTime());
     appointment.getPatient()
             .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
     Appointment savedAppointment = appointmentsRepository.save(appointment);

@@ -2,6 +2,7 @@ package kz.projects.telemedicine.controllers;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.RescheduleRequest;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,8 +31,9 @@ public class PatientController {
   }
 
   @PutMapping("/{id}")
-  private ResponseEntity<AppointmentDTO> changeAppointment(@PathVariable(name = "id") Long id){
-    return new ResponseEntity<>(patientService.changeAppointment(id), HttpStatus.OK);
+  private ResponseEntity<AppointmentDTO> changeAppointment(@PathVariable(name = "id") Long id,
+                                                           @RequestBody RescheduleRequest request){
+    return new ResponseEntity<>(patientService.changeAppointment(id, request), HttpStatus.OK);
   }
 
   @GetMapping
