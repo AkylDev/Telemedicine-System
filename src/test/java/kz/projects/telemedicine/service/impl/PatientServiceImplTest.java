@@ -90,7 +90,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testMakeAppointment_PatientNotFound() {
+  public void testMakeAppointmentPatientNotFound() {
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
     when(authService.getCurrentSessionUser()).thenReturn(currentUser);
@@ -113,7 +113,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testChangeAppointment_Success() {
+  public void testChangeAppointmentSuccessfully() {
     Long appointmentId = 1L;
     RescheduleRequest request = new RescheduleRequest();
     request.setDate(LocalDate.now().plusDays(1));
@@ -159,7 +159,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testChangeAppointment_Unauthorized() {
+  public void testChangeAppointmentUnauthorized() {
     Long appointmentId = 1L;
     RescheduleRequest request = new RescheduleRequest();
     request.setDate(LocalDate.now().plusDays(1));
@@ -194,7 +194,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testCancelAppointment_Success() {
+  public void testCancelAppointmentSuccessfully() {
     Long appointmentId = 1L;
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
@@ -221,7 +221,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testCancelAppointment_AppointmentNotFound() {
+  public void testCancelAppointmentAppointmentNotFound() {
     Long appointmentId = 1L;
     when(appointmentsRepository.findById(appointmentId)).thenReturn(Optional.empty());
 
@@ -234,7 +234,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testGetAppointments_Success() {
+  public void testGetAppointmentsSuccessfully() {
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
     when(authService.getCurrentSessionUser()).thenReturn(currentUser);
@@ -269,7 +269,7 @@ public class PatientServiceImplTest {
   }
 
   @Test
-  public void testGetAppointments_PatientNotFound() {
+  public void testGetAppointmentsPatientNotFound() {
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
     when(authService.getCurrentSessionUser()).thenReturn(currentUser);

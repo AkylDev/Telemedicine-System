@@ -103,7 +103,7 @@ public class AuthServiceImplTest {
   }
 
   @Test
-  public void testRegisterPatient_UserExists() {
+  public void testRegisterPatientWhenUserExists() {
     PatientDTO registerRequest = new PatientDTO();
     registerRequest.setEmail("test@example.com");
     registerRequest.setPassword("testPassword");
@@ -125,7 +125,7 @@ public class AuthServiceImplTest {
   }
 
   @Test
-  public void testLogin_Success() {
+  public void testLoginSuccessfully() {
     LoginRequest request = new LoginRequest();
     String email = "test@example.com";
     String password = "testPassword";
@@ -149,7 +149,7 @@ public class AuthServiceImplTest {
   }
 
   @Test
-  public void testLogin_InvalidCredentials() {
+  public void testLoginWithInvalidCredentials() {
     LoginRequest request = new LoginRequest();
     String email = "test@example.com";
     String password = "testPassword";
@@ -173,7 +173,7 @@ public class AuthServiceImplTest {
   }
 
   @Test
-  public void testAddDoctor_Successfully() {
+  public void testAddDoctorSuccessfully() {
     DoctorDTO doctorRequest = new DoctorDTO();
     doctorRequest.setName("Dr. John Doe");
     doctorRequest.setEmail("john.doe@example.com");
