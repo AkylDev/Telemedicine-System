@@ -1,4 +1,4 @@
-package kz.projects.telemedicine.dto;
+package kz.projects.telemedicine.dto.requests;
 
 import lombok.Getter;
 import lombok.Setter;

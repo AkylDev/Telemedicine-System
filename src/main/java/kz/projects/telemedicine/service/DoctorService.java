@@ -1,6 +1,6 @@
 package kz.projects.telemedicine.service;
 
-import kz.projects.telemedicine.dto.ChangeRecordRequest;
+import kz.projects.telemedicine.dto.requests.ChangeRecordRequest;
 import kz.projects.telemedicine.dto.PrescriptionDTO;
 
 import java.util.List;

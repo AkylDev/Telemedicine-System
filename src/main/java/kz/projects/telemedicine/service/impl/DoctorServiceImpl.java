@@ -1,7 +1,7 @@
 package kz.projects.telemedicine.service.impl;
 
 import jakarta.transaction.Transactional;
-import kz.projects.telemedicine.dto.ChangeRecordRequest;
+import kz.projects.telemedicine.dto.requests.ChangeRecordRequest;
 import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.mapper.PrescriptionMapper;

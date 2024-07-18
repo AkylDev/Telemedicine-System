@@ -2,7 +2,7 @@ package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.RescheduleRequest;
+import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.exceptions.UnauthorizedException;

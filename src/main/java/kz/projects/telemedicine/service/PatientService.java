@@ -3,7 +3,7 @@ package kz.projects.telemedicine.service;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.RescheduleRequest;
+import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 
 import java.util.List;
 

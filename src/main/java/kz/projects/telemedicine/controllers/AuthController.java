@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.LoginRequest;
+import kz.projects.telemedicine.dto.UserDTO;
+import kz.projects.telemedicine.dto.requests.LoginRequest;
 import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +44,8 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest request) {
     try {
-      UserDetails userDetails = authService.login(request);
-      return ResponseEntity.ok(userDetails);
+      UserDTO user = authService.login(request);
+      return ResponseEntity.ok(user);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }

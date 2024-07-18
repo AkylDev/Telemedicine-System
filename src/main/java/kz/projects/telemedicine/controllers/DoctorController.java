@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kz.projects.telemedicine.dto.ChangeRecordRequest;
+import kz.projects.telemedicine.dto.requests.ChangeRecordRequest;
 import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.service.DoctorService;
 import lombok.RequiredArgsConstructor;

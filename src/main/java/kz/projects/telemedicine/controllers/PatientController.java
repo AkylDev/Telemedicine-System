@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.RescheduleRequest;
+import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

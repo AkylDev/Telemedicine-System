@@ -1,7 +1,8 @@
 package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.LoginRequest;
+import kz.projects.telemedicine.dto.UserDTO;
+import kz.projects.telemedicine.dto.requests.LoginRequest;
 import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.mapper.DoctorMapper;
 import kz.projects.telemedicine.mapper.PatientMapper;
@@ -141,9 +142,9 @@ public class AuthServiceImplTest {
 
     when(passwordEncoder.matches(password, userDetails.getPassword())).thenReturn(true);
 
-    UserDetails result = authService.login(request);
+    UserDTO result = authService.login(request);
 
-    assertEquals(email, result.getUsername());
+    assertEquals(email, result.getEmail());
     verify(userDetailsService, times(1)).loadUserByUsername(email);
     verify(passwordEncoder, times(1)).matches(password, userDetails.getPassword());
   }

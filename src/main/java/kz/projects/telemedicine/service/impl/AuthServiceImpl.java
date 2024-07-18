@@ -1,10 +1,12 @@
 package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.dto.DoctorDTO;
-import kz.projects.telemedicine.dto.LoginRequest;
+import kz.projects.telemedicine.dto.UserDTO;
+import kz.projects.telemedicine.dto.requests.LoginRequest;
 import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.mapper.DoctorMapper;
 import kz.projects.telemedicine.mapper.PatientMapper;
+import kz.projects.telemedicine.mapper.UserMapper;
 import kz.projects.telemedicine.model.Doctor;
 import kz.projects.telemedicine.model.Patient;
 import kz.projects.telemedicine.model.Permissions;
@@ -76,15 +78,14 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public UserDetails login(LoginRequest request) {
-//    User userDetails = (User) userDetailsService.loadUserByUsername(request.getEmail());
+  public UserDTO login(LoginRequest request) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
     if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
       UsernamePasswordAuthenticationToken authenticationToken =
               new UsernamePasswordAuthenticationToken(userDetails, null,
                       userDetails.getAuthorities());
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-      return userDetails;
+      return UserMapper.toDto((User) userDetails);
     } else {
       throw new UsernameNotFoundException("Invalid credentials");
     }
