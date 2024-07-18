@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
@@ -76,5 +77,10 @@ public class PatientController {
   public ResponseEntity<Void> cancelAppointment(@PathVariable(name = "id") Long id) {
     patientService.cancelAppointment(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/prescriptions")
+  public ResponseEntity<List<PrescriptionDTO>> getPrescriptions(){
+    return new ResponseEntity<>(patientService.getPrescriptions(), HttpStatus.OK);
   }
 }

@@ -3,6 +3,7 @@ package kz.projects.telemedicine.service;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface PatientService {
   AppointmentDTO changeAppointment(Long id, RescheduleRequest request);
   void cancelAppointment(Long id);
   List<AppointmentDTO> getAppointments();
+
+  List<PrescriptionDTO> getPrescriptions();
 }

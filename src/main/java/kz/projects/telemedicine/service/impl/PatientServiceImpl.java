@@ -3,6 +3,7 @@ package kz.projects.telemedicine.service.impl;
 import jakarta.transaction.Transactional;
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.PrescriptionDTO;
 import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.DoctorNotFoundException;
@@ -10,10 +11,12 @@ import kz.projects.telemedicine.exceptions.PatientNotFoundException;
 import kz.projects.telemedicine.exceptions.UnauthorizedException;
 import kz.projects.telemedicine.mapper.AppointmentMapper;
 import kz.projects.telemedicine.mapper.DoctorMapper;
+import kz.projects.telemedicine.mapper.PrescriptionMapper;
 import kz.projects.telemedicine.model.*;
 import kz.projects.telemedicine.repositories.AppointmentsRepository;
 import kz.projects.telemedicine.repositories.DoctorRepository;
 import kz.projects.telemedicine.repositories.PatientRepository;
+import kz.projects.telemedicine.repositories.PrescriptionsRepository;
 import kz.projects.telemedicine.service.AuthService;
 import kz.projects.telemedicine.service.PatientService;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +36,13 @@ public class PatientServiceImpl implements PatientService {
 
   private final PatientRepository patientRepository;
 
+  private final PrescriptionsRepository prescriptionsRepository;
+
   private final AuthService authService;
 
   private final AppointmentMapper appointmentMapper;
+
+  private final PrescriptionMapper prescriptionMapper;
 
   private final DoctorMapper doctorMapper;
 
@@ -134,4 +141,17 @@ public class PatientServiceImpl implements PatientService {
     List<Appointment> appointments = appointmentsRepository.findAllByPatient(currentPatient);
     return appointmentMapper.toDtoList(appointments);
   }
+
+  @Override
+  public List<PrescriptionDTO> getPrescriptions() {
+    String currentUserEmail = getCurrentUser().getEmail();
+
+    Patient patient = patientRepository.findByEmail(currentUserEmail)
+            .orElseThrow(() -> new PatientNotFoundException("Patient not found"));
+
+    List<Prescriptions> prescriptions = prescriptionsRepository.findAllByPatient(patient).orElseThrow();
+    return prescriptionMapper.toDtoList(prescriptions);
+  }
+
+
 }
