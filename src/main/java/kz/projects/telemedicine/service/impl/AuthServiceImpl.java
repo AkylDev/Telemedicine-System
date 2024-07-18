@@ -109,10 +109,11 @@ public class AuthServiceImpl implements AuthService {
     }
     user.setPermissionList(Collections.singletonList(defaultPermission));
 
-    Doctor doctor = doctorMapper.toModel(doctorRequest);
-    doctor.setUser(user);
+    User savedUser = userRepository.save(user);
 
-    userRepository.save(user);
+    Doctor doctor = doctorMapper.toModel(doctorRequest);
+    doctor.setUser(savedUser);
+
     Doctor savedDoctor = doctorRepository.save(doctor);
 
     return doctorMapper.toDto(savedDoctor);
