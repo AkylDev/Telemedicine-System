@@ -79,6 +79,12 @@ public class PatientController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "Get prescriptions by doctors")
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Get List of prescriptions successfully"),
+          @ApiResponse(responseCode = "404", description = "Patient not found"),
+          @ApiResponse(responseCode = "403", description = "Unauthorized")
+  })
   @GetMapping("/prescriptions")
   public ResponseEntity<List<PrescriptionDTO>> getPrescriptions(){
     return new ResponseEntity<>(patientService.getPrescriptions(), HttpStatus.OK);
