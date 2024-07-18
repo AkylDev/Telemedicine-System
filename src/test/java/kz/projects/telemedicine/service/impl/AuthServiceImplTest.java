@@ -133,20 +133,20 @@ public class AuthServiceImplTest {
     request.setEmail(email);
     request.setPassword(password);
 
+    // Create a mock User instance
+    User user = new User();
+    user.setEmail(email);
+    user.setPassword(passwordEncoder.encode(password)); // Encoding the password for matching
+    user.setPermissionList(Collections.singletonList(new Permissions(1L, "ROLE_PATIENT")));
 
-    UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(email)
-            .password(password)
-            .roles("PATIENT")
-            .build();
-    when(userDetailsService.loadUserByUsername(email)).thenReturn(userDetails);
-
-    when(passwordEncoder.matches(password, userDetails.getPassword())).thenReturn(true);
+    when(userDetailsService.loadUserByUsername(email)).thenReturn(user);
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
 
     UserDTO result = authService.login(request);
 
     assertEquals(email, result.getEmail());
     verify(userDetailsService, times(1)).loadUserByUsername(email);
-    verify(passwordEncoder, times(1)).matches(password, userDetails.getPassword());
+    verify(passwordEncoder, times(1)).matches(password, user.getPassword());
   }
 
   @Test
