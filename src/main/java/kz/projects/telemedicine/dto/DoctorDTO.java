@@ -1,16 +1,5 @@
 package kz.projects.telemedicine.dto;
 
 import kz.projects.telemedicine.model.Specialization;
-import lombok.Getter;
-import lombok.Setter;
+public record DoctorDTO(Long id, String name, String email, String password, Specialization specialization, String schedule) { }
 
-@Getter
-@Setter
-public class DoctorDTO {
-  private Long id;
-  private String name;
-  private String email;
-  private String password;
-  private Specialization specialization;
-  private String schedule;
-}

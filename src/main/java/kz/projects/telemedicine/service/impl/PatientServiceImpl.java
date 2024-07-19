@@ -71,7 +71,7 @@ public class PatientServiceImpl implements PatientService {
     appointment.setPatient(patient);
     appointment.setStatus(AppointmentStatus.SCHEDULED);
 
-    Optional<Doctor> doctorOptional = doctorRepository.findById(appointmentRequest.getDoctor().getId());
+    Optional<Doctor> doctorOptional = doctorRepository.findById(appointmentRequest.doctor().id());
     if (doctorOptional.isEmpty()) {
       throw new DoctorNotFoundException("Doctor not found");
     }
@@ -101,8 +101,8 @@ public class PatientServiceImpl implements PatientService {
     }
 
     appointment.setStatus(AppointmentStatus.RESCHEDULED);
-    appointment.setDate(request.getDate());
-    appointment.setTime(request.getTime());
+    appointment.setDate(request.date());
+    appointment.setTime(request.time());
     appointment.getPatient()
             .setMedicalHistory(appointment.getPatient().getMedicalHistory() + "\n" + appointment.getInfo());
     Appointment savedAppointment = appointmentsRepository.save(appointment);

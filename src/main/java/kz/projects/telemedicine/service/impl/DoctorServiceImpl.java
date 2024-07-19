@@ -54,7 +54,7 @@ public class DoctorServiceImpl implements DoctorService {
       throw new PatientNotFoundException("Patient not found");
     }
     Patient patient = patientOptional.get();
-    patient.setMedicalHistory(request.getRecord());
+    patient.setMedicalHistory(request.record());
     patientRepository.save(patient);
 
     return patient.getMedicalHistory();
@@ -74,9 +74,9 @@ public class DoctorServiceImpl implements DoctorService {
       prescription.setDoctor(doctor);
       prescription.setPatient(patient);
 
-      prescription.setMedication(prescriptionDTO.getMedication());
-      prescription.setDosage(prescriptionDTO.getDosage());
-      prescription.setDuration(prescriptionDTO.getDuration());
+      prescription.setMedication(prescriptionDTO.medication());
+      prescription.setDosage(prescriptionDTO.dosage());
+      prescription.setDuration(prescriptionDTO.duration());
 
       return prescriptionMapper.toDto(prescriptionsRepository.save(prescription));
     } else {

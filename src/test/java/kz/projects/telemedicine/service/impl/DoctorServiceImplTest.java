@@ -84,8 +84,7 @@ public class DoctorServiceImplTest {
     Long patientId = 1L;
     String newMedicalHistory = "Updated medical history";
 
-    ChangeRecordRequest changeRecordRequest = new ChangeRecordRequest();
-    changeRecordRequest.setRecord(newMedicalHistory);
+    ChangeRecordRequest changeRecordRequest = new ChangeRecordRequest(newMedicalHistory);
 
     Patient patient = new Patient();
     patient.setId(patientId);
@@ -106,8 +105,7 @@ public class DoctorServiceImplTest {
   @Test
   public void testChangePatientRecordWhenPatientNotFound() {
     Long patientId = 1L;
-    ChangeRecordRequest changeRecordRequest = new ChangeRecordRequest();
-    changeRecordRequest.setRecord("New record");
+    ChangeRecordRequest changeRecordRequest = new ChangeRecordRequest("New record");
 
     when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
 
@@ -136,17 +134,21 @@ public class DoctorServiceImplTest {
     patient.setId(patientId);
     when(patientRepository.findById(patientId)).thenReturn(Optional.of(patient));
 
-    PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
-    prescriptionDTO.setMedication("Medication");
-    prescriptionDTO.setDosage("Dosage");
-    prescriptionDTO.setDuration("Duration");
+    PrescriptionDTO prescriptionDTO = new PrescriptionDTO(
+            null, // id will be set by the repository
+            null, // patient will be set by the repository
+            null, // doctor will be set by the repository
+            "Medication",
+            "Dosage",
+            "Duration"
+    );
 
     Prescriptions prescription = new Prescriptions();
     prescription.setDoctor(doctor);
     prescription.setPatient(patient);
-    prescription.setMedication(prescriptionDTO.getMedication());
-    prescription.setDosage(prescriptionDTO.getDosage());
-    prescription.setDuration(prescriptionDTO.getDuration());
+    prescription.setMedication(prescriptionDTO.medication());
+    prescription.setDosage(prescriptionDTO.dosage());
+    prescription.setDuration(prescriptionDTO.duration());
 
     when(prescriptionsRepository.save(any(Prescriptions.class))).thenReturn(prescription);
     when(prescriptionMapper.toDto(any(Prescriptions.class))).thenReturn(prescriptionDTO);
@@ -154,9 +156,9 @@ public class DoctorServiceImplTest {
     PrescriptionDTO result = doctorService.makePrescription(patientId, prescriptionDTO);
 
     assertNotNull(result);
-    assertEquals(prescriptionDTO.getMedication(), result.getMedication());
-    assertEquals(prescriptionDTO.getDosage(), result.getDosage());
-    assertEquals(prescriptionDTO.getDuration(), result.getDuration());
+    assertEquals(prescriptionDTO.medication(), result.medication());
+    assertEquals(prescriptionDTO.dosage(), result.dosage());
+    assertEquals(prescriptionDTO.duration(), result.duration());
 
     verify(doctorRepository, times(1)).findByEmail(doctorEmail);
     verify(patientRepository, times(1)).findById(patientId);
@@ -176,10 +178,14 @@ public class DoctorServiceImplTest {
     when(doctorRepository.findByEmail(doctorEmail)).thenReturn(Optional.of(new Doctor()));
     when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
 
-    PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
-    prescriptionDTO.setMedication("Medication");
-    prescriptionDTO.setDosage("Dosage");
-    prescriptionDTO.setDuration("Duration");
+    PrescriptionDTO prescriptionDTO = new PrescriptionDTO(
+            null, // id will be set by the repository
+            null, // patient will be set by the repository
+            null, // doctor will be set by the repository
+            "Medication",
+            "Dosage",
+            "Duration"
+    );
 
     PatientNotFoundException exception = assertThrows(PatientNotFoundException.class,
             () -> doctorService.makePrescription(patientId, prescriptionDTO));
@@ -210,10 +216,22 @@ public class DoctorServiceImplTest {
     when(prescriptionsRepository.findAllByPatient(patient)).thenReturn(Optional.of(prescriptions));
 
     List<PrescriptionDTO> prescriptionDTOs = new ArrayList<>();
-    PrescriptionDTO prescriptionDTO1 = new PrescriptionDTO();
-    prescriptionDTO1.setId(1L);
-    PrescriptionDTO prescriptionDTO2 = new PrescriptionDTO();
-    prescriptionDTO2.setId(2L);
+    PrescriptionDTO prescriptionDTO1 = new PrescriptionDTO(
+            1L, // id
+            null, // patient
+            null, // doctor
+            null, // medication
+            null, // dosage
+            null  // duration
+    );
+    PrescriptionDTO prescriptionDTO2 = new PrescriptionDTO(
+            2L, // id
+            null, // patient
+            null, // doctor
+            null, // medication
+            null, // dosage
+            null  // duration
+    );
     prescriptionDTOs.add(prescriptionDTO1);
     prescriptionDTOs.add(prescriptionDTO2);
 
@@ -223,8 +241,8 @@ public class DoctorServiceImplTest {
 
     assertNotNull(result);
     assertEquals(2, result.size());
-    assertEquals(prescriptionDTO1.getId(), result.get(0).getId());
-    assertEquals(prescriptionDTO2.getId(), result.get(1).getId());
+    assertEquals(prescriptionDTO1.id(), result.get(0).id());
+    assertEquals(prescriptionDTO2.id(), result.get(1).id());
 
     verify(patientRepository, times(1)).findById(patientId);
     verify(prescriptionsRepository, times(1)).findAllByPatient(patient);

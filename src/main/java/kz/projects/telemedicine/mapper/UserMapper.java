@@ -12,12 +12,11 @@ public class UserMapper {
       return null;
     }
 
-    UserDTO dto = new UserDTO();
-    dto.setId(user.getId());
-    dto.setEmail(user.getEmail());
-    dto.setPermissionList(user.getPermissionList());
-
-    return dto;
+    return new UserDTO(
+            user.getId(),
+            user.getEmail(),
+            user.getPermissionList()
+    );
   }
 
 }

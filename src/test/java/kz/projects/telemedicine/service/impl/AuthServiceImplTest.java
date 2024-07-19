@@ -59,13 +59,9 @@ public class AuthServiceImplTest {
 
   @Test
   public void testRegisterPatientSuccessfully() {
-    PatientDTO newPatient = new PatientDTO();
-    newPatient.setName("testName");
-    newPatient.setEmail("testEmail@example.com");
-    newPatient.setPassword("testPassword");
-    newPatient.setPhone("testPhone");
+    PatientDTO newPatient = new PatientDTO(null, "testName", "testEmail@example.com", "testPhone", "testPassword");
 
-    when(userRepository.findByEmail(newPatient.getEmail())).thenReturn(null);
+    when(userRepository.findByEmail(newPatient.email())).thenReturn(null);
 
     Permissions defaultPermission = new Permissions();
     defaultPermission.setId(1L);
@@ -73,9 +69,9 @@ public class AuthServiceImplTest {
     when(permissionRepository.findByRole("ROLE_PATIENT")).thenReturn(defaultPermission);
 
     Patient patient = new Patient();
-    patient.setName("testName");
-    patient.setEmail("testEmail@example.com");
-    patient.setPhone("testPhone");
+    patient.setName(newPatient.name());
+    patient.setEmail(newPatient.email());
+    patient.setPhone(newPatient.phone());
 
     when(patientRepository.save(patient)).thenReturn(patient);
     when(patientMapper.toModel(newPatient)).thenReturn(patient);
@@ -83,18 +79,18 @@ public class AuthServiceImplTest {
     when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
 
     User newUser = new User();
-    newUser.setEmail(newPatient.getEmail());
-    newUser.setPassword(newPatient.getPassword());
+    newUser.setEmail(newPatient.email());
+    newUser.setPassword("encodedPassword");
     newUser.setPermissionList(Collections.singletonList(defaultPermission));
     when(userRepository.save(any(User.class))).thenReturn(newUser);
 
     PatientDTO savedPatientDTO = authService.register(newPatient);
 
     assertThat(savedPatientDTO).isNotNull();
-    assertEquals(newPatient.getEmail(), savedPatientDTO.getEmail());
-    assertEquals(newUser.getPassword(), newPatient.getPassword());
+    assertEquals(newPatient.email(), savedPatientDTO.email());
+    assertEquals(newUser.getPassword(), "encodedPassword");
     assertEquals(1, newUser.getPermissionList().size());
-    verify(userRepository, times(1)).findByEmail(newPatient.getEmail());
+    verify(userRepository, times(1)).findByEmail(newPatient.email());
     verify(userRepository, times(1)).save(any(User.class));
     verify(permissionRepository, times(1)).findByRole("ROLE_PATIENT");
     verify(permissionRepository, times(0)).save(any(Permissions.class)); // Assuming defaultPermission exists
@@ -103,21 +99,20 @@ public class AuthServiceImplTest {
     verify(patientMapper, times(1)).toDto(patient);
   }
 
+
   @Test
   public void testRegisterPatientWhenUserExists() {
-    PatientDTO registerRequest = new PatientDTO();
-    registerRequest.setEmail("test@example.com");
-    registerRequest.setPassword("testPassword");
+    PatientDTO registerRequest = new PatientDTO(null, null, "test@example.com", null, "testPassword");
 
     User existingUser = new User();
-    existingUser.setEmail(registerRequest.getEmail());
-    when(userRepository.findByEmail(registerRequest.getEmail())).thenReturn(existingUser);
+    existingUser.setEmail(registerRequest.email());
+    when(userRepository.findByEmail(registerRequest.email())).thenReturn(existingUser);
 
     IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> authService.register(registerRequest));
     assertEquals("User with this email already exists.", exception.getMessage());
 
-    verify(userRepository, times(1)).findByEmail(registerRequest.getEmail());
+    verify(userRepository, times(1)).findByEmail(registerRequest.email());
     verify(userRepository, times(0)).save(any(User.class));
     verify(permissionRepository, times(0)).findByRole(anyString());
     verify(patientRepository, times(0)).save(any(Patient.class));
@@ -125,13 +120,12 @@ public class AuthServiceImplTest {
     verify(patientMapper, times(0)).toDto(any(Patient.class));
   }
 
+
   @Test
   public void testLoginSuccessfully() {
-    LoginRequest request = new LoginRequest();
     String email = "test@example.com";
     String password = "testPassword";
-    request.setEmail(email);
-    request.setPassword(password);
+    LoginRequest request = new LoginRequest(email, password);
 
     // Create a mock User instance
     User user = new User();
@@ -144,18 +138,16 @@ public class AuthServiceImplTest {
 
     UserDTO result = authService.login(request);
 
-    assertEquals(email, result.getEmail());
+    assertEquals(email, result.email());
     verify(userDetailsService, times(1)).loadUserByUsername(email);
     verify(passwordEncoder, times(1)).matches(password, user.getPassword());
   }
 
   @Test
   public void testLoginWithInvalidCredentials() {
-    LoginRequest request = new LoginRequest();
     String email = "test@example.com";
     String password = "testPassword";
-    request.setEmail(email);
-    request.setPassword(password);
+    LoginRequest request = new LoginRequest(email, password);
 
     UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(email)
             .password("differentPassword")
@@ -175,14 +167,16 @@ public class AuthServiceImplTest {
 
   @Test
   public void testAddDoctorSuccessfully() {
-    DoctorDTO doctorRequest = new DoctorDTO();
-    doctorRequest.setName("Dr. John Doe");
-    doctorRequest.setEmail("john.doe@example.com");
-    doctorRequest.setPassword("password123");
-    doctorRequest.setSpecialization(Specialization.DENTIST);
-    doctorRequest.setSchedule("Monday to Friday, 9 AM - 5 PM");
+    DoctorDTO doctorRequest = new DoctorDTO(
+            null, // id will be null for requests
+            "Dr. John Doe",
+            "john.doe@example.com",
+            "password123",
+            Specialization.DENTIST,
+            "Monday to Friday, 9 AM - 5 PM"
+    );
 
-    when(userRepository.findByEmail(doctorRequest.getEmail())).thenReturn(null);
+    when(userRepository.findByEmail(doctorRequest.email())).thenReturn(null);
 
     Permissions defaultPermission = new Permissions();
     defaultPermission.setId(1L);
@@ -190,10 +184,10 @@ public class AuthServiceImplTest {
     when(permissionRepository.findByRole("ROLE_DOCTOR")).thenReturn(defaultPermission);
 
     Doctor doctor = new Doctor();
-    doctor.setEmail(doctorRequest.getEmail());
-    doctor.setName(doctorRequest.getName());
-    doctor.setSpecialization(doctorRequest.getSpecialization());
-    doctor.setSchedule(doctorRequest.getSchedule());
+    doctor.setEmail(doctorRequest.email());
+    doctor.setName(doctorRequest.name());
+    doctor.setSpecialization(doctorRequest.specialization());
+    doctor.setSchedule(doctorRequest.schedule());
 
     when(doctorRepository.save(doctor)).thenReturn(doctor);
     when(doctorMapper.toModel(doctorRequest)).thenReturn(doctor);
@@ -201,19 +195,19 @@ public class AuthServiceImplTest {
     when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
 
     User newUser = new User();
-    newUser.setEmail(doctorRequest.getEmail());
-    newUser.setPassword(doctorRequest.getPassword());
+    newUser.setEmail(doctorRequest.email());
+    newUser.setPassword(doctorRequest.password());
     when(userRepository.save(any(User.class))).thenReturn(newUser);
 
     DoctorDTO result = authService.addDoctor(doctorRequest);
 
     assertThat(result).isNotNull();
-    assertEquals(doctorRequest.getEmail(), result.getEmail());
-    assertEquals(doctorRequest.getName(), result.getName());
-    assertEquals(doctorRequest.getSpecialization(), result.getSpecialization());
-    assertEquals(doctorRequest.getSchedule(), result.getSchedule());
+    assertEquals(doctorRequest.email(), result.email());
+    assertEquals(doctorRequest.name(), result.name());
+    assertEquals(doctorRequest.specialization(), result.specialization());
+    assertEquals(doctorRequest.schedule(), result.schedule());
 
-    verify(userRepository, times(1)).findByEmail(doctorRequest.getEmail());
+    verify(userRepository, times(1)).findByEmail(doctorRequest.email());
     verify(permissionRepository, times(1)).findByRole("ROLE_DOCTOR");
     verify(userRepository, times(1)).save(any(User.class));
     verify(doctorRepository, times(1)).save(any(Doctor.class));

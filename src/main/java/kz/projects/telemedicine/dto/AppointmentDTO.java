@@ -1,24 +1,18 @@
 package kz.projects.telemedicine.dto;
 
 import kz.projects.telemedicine.model.AppointmentStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class AppointmentDTO {
-  private Long id;
-  private PatientDTO patient;
-  private DoctorDTO doctor;
-  private LocalDate date;
-  private LocalTime time;
-  private AppointmentStatus status;
-  private String info;
-}
+public record AppointmentDTO(
+        Long id,
+        PatientDTO patient,
+        DoctorDTO doctor,
+        LocalDate date,
+        LocalTime time,
+        AppointmentStatus status,
+        String info
+) { }
+

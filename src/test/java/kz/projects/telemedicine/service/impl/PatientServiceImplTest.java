@@ -2,6 +2,7 @@ package kz.projects.telemedicine.service.impl;
 
 import kz.projects.telemedicine.dto.AppointmentDTO;
 import kz.projects.telemedicine.dto.DoctorDTO;
+import kz.projects.telemedicine.dto.PatientDTO;
 import kz.projects.telemedicine.dto.requests.RescheduleRequest;
 import kz.projects.telemedicine.exceptions.AppointmentNotFoundException;
 import kz.projects.telemedicine.exceptions.PatientNotFoundException;
@@ -62,11 +63,18 @@ public class PatientServiceImplTest {
     doctor.setId(1L);
     when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
 
-    AppointmentDTO appointmentRequest = new AppointmentDTO();
-    appointmentRequest.setDoctor(new DoctorDTO());
-    appointmentRequest.getDoctor().setId(1L);
-    appointmentRequest.setDate(LocalDate.now());
-    appointmentRequest.setTime(LocalTime.MAX);
+    PatientDTO patientDTO = new PatientDTO(1L, "testName", "testEmail@example.com", "testPhone", "testPassword");
+    DoctorDTO doctorDTO = new DoctorDTO(1L, "Dr. John Doe", "john.doe@example.com", "password123", Specialization.DENTIST, "Monday to Friday, 9 AM - 5 PM");
+
+    AppointmentDTO appointmentRequest = new AppointmentDTO(
+            null, // id (to be set by the service)
+            patientDTO,
+            doctorDTO,
+            LocalDate.now(),
+            LocalTime.MAX,
+            AppointmentStatus.SCHEDULED,
+            "Test appointment info"
+    );
 
     Appointment appointment = new Appointment();
     appointment.setDoctor(doctor);
@@ -80,13 +88,13 @@ public class PatientServiceImplTest {
     AppointmentDTO result = patientService.makeAppointment(appointmentRequest);
 
     assertNotNull(result);
-    assertEquals(appointmentRequest.getDoctor().getId(), result.getDoctor().getId());
-    assertEquals(appointmentRequest.getDate(), result.getDate());
-    assertEquals(appointmentRequest.getTime(), result.getTime());
+    assertEquals(appointmentRequest.doctor().id(), result.doctor().id());
+    assertEquals(appointmentRequest.date(), result.date());
+    assertEquals(appointmentRequest.time(), result.time());
 
     verify(patientRepository, times(1)).findByEmail("test@example.com");
     verify(doctorRepository, times(1)).findById(1L);
-    verify(appointmentsRepository, times(1)).save(appointment);
+    verify(appointmentsRepository, times(1)).save(any(Appointment.class));
   }
 
   @Test
@@ -97,11 +105,24 @@ public class PatientServiceImplTest {
 
     when(patientRepository.findByEmail(currentUser.getEmail())).thenReturn(Optional.empty());
 
-    AppointmentDTO appointmentRequest = new AppointmentDTO();
-    appointmentRequest.setDoctor(new DoctorDTO());
-    appointmentRequest.getDoctor().setId(1L);
-    appointmentRequest.setDate(LocalDate.now());
-    appointmentRequest.setTime(LocalTime.MAX);
+    DoctorDTO doctorDTO = new DoctorDTO(
+            1L, // id
+            null, // name
+            null, // email
+            null, // password
+            null, // specialization
+            null  // schedule
+    );
+
+    AppointmentDTO appointmentRequest = new AppointmentDTO(
+            null, // id
+            null, // patient
+            doctorDTO,
+            LocalDate.now(),
+            LocalTime.MAX,
+            AppointmentStatus.SCHEDULED,
+            "Test appointment info"
+    );
 
     PatientNotFoundException exception = assertThrows(PatientNotFoundException.class,
             () -> patientService.makeAppointment(appointmentRequest));
@@ -112,12 +133,11 @@ public class PatientServiceImplTest {
     verify(appointmentsRepository, never()).save(any(Appointment.class));
   }
 
+
   @Test
   public void testChangeAppointmentSuccessfully() {
     Long appointmentId = 1L;
-    RescheduleRequest request = new RescheduleRequest();
-    request.setDate(LocalDate.now().plusDays(1));
-    request.setTime(LocalTime.NOON);
+    RescheduleRequest request = new RescheduleRequest(LocalDate.now().plusDays(1), LocalTime.NOON);
 
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
@@ -145,7 +165,14 @@ public class PatientServiceImplTest {
     savedAppointment.setTime(LocalTime.MAX);
     when(appointmentsRepository.save(appointment)).thenReturn(savedAppointment);
 
-    AppointmentDTO expectedResponse = new AppointmentDTO();
+    AppointmentDTO expectedResponse = new AppointmentDTO(
+            null, // id
+            null, // patient
+            null,
+            LocalDate.now(),
+            LocalTime.MAX,
+            AppointmentStatus.SCHEDULED,
+            "Test appointment info");
     when(appointmentMapper.toResponseDto(savedAppointment)).thenReturn(expectedResponse);
 
     AppointmentDTO result = patientService.changeAppointment(appointmentId, request);
@@ -161,9 +188,7 @@ public class PatientServiceImplTest {
   @Test
   public void testChangeAppointmentUnauthorized() {
     Long appointmentId = 1L;
-    RescheduleRequest request = new RescheduleRequest();
-    request.setDate(LocalDate.now().plusDays(1));
-    request.setTime(LocalTime.NOON);
+    RescheduleRequest request = new RescheduleRequest(LocalDate.now().plusDays(1), LocalTime.NOON);
 
     User currentUser = new User();
     currentUser.setEmail("test@example.com");
@@ -251,8 +276,22 @@ public class PatientServiceImplTest {
     when(appointmentsRepository.findAllByPatient(patient)).thenReturn(appointments);
 
     List<AppointmentDTO> appointmentDTOs = new ArrayList<>();
-    AppointmentDTO appointmentDTO1 = new AppointmentDTO();
-    AppointmentDTO appointmentDTO2 = new AppointmentDTO();
+    AppointmentDTO appointmentDTO1 = new AppointmentDTO(
+            null, // id
+            null, // patient
+            null,
+            LocalDate.now(),
+            LocalTime.MAX,
+            AppointmentStatus.SCHEDULED,
+            "Test appointment info");
+    AppointmentDTO appointmentDTO2 = new AppointmentDTO(
+            null, // id
+            null, // patient
+            null,
+            LocalDate.now(),
+            LocalTime.MIN,
+            AppointmentStatus.CANCELLED,
+            "Test appointment info");
     appointmentDTOs.add(appointmentDTO1);
     appointmentDTOs.add(appointmentDTO2);
     when(appointmentMapper.toDtoList(appointments)).thenReturn(appointmentDTOs);

@@ -50,14 +50,14 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public PatientDTO register(PatientDTO registerRequest) {
-    User checkUser = userRepository.findByEmail(registerRequest.getEmail());
+    User checkUser = userRepository.findByEmail(registerRequest.email());
     if (checkUser != null) {
       throw new IllegalArgumentException("User with this email already exists.");
     }
 
     User user = new User();
-    user.setEmail(registerRequest.getEmail());
-    user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+    user.setEmail(registerRequest.email());
+    user.setPassword(passwordEncoder.encode(registerRequest.password()));
 
     Permissions defaultPermission = permissionRepository.findByRole("ROLE_PATIENT");
     if (defaultPermission == null) {
@@ -78,8 +78,8 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public UserDTO login(LoginRequest request) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-    if (passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
+    UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());
+    if (passwordEncoder.matches(request.password(), userDetails.getPassword())) {
       UsernamePasswordAuthenticationToken authenticationToken =
               new UsernamePasswordAuthenticationToken(userDetails, null,
                       userDetails.getAuthorities());
@@ -92,14 +92,14 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public DoctorDTO addDoctor(DoctorDTO doctorRequest) {
-    User checkUser = userRepository.findByEmail(doctorRequest.getEmail());
+    User checkUser = userRepository.findByEmail(doctorRequest.email());
     if (checkUser != null) {
       throw new IllegalArgumentException("User with this email already exists.");
     }
 
     User user = new User();
-    user.setEmail(doctorRequest.getEmail());
-    user.setPassword(passwordEncoder.encode(doctorRequest.getPassword()));
+    user.setEmail(doctorRequest.email());
+    user.setPassword(passwordEncoder.encode(doctorRequest.password()));
 
     Permissions defaultPermission = permissionRepository.findByRole("ROLE_DOCTOR");
     if (defaultPermission == null) {
