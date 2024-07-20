@@ -25,7 +25,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Реализация сервиса для работы с пациентами.
+ * Обрабатывает запросы на получение докторов, назначение и изменение приёмов,
+ * отмену приёмов, а также получение назначений и рецептов пациента.
+ */
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
@@ -46,16 +50,34 @@ public class PatientServiceImpl implements PatientService {
 
   private final DoctorMapper doctorMapper;
 
+  /**
+   * Получает текущего аутентифицированного пользователя из сервиса аутентификации.
+   *
+   * @return текущий пользователь в виде {@link User}
+   */
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
 
-
+  /**
+   * Получает список всех докторов.
+   *
+   * @return список докторов в виде {@link List<DoctorDTO>}
+   */
   @Override
   public List<DoctorDTO> getDoctors() {
     return doctorMapper.toDtoList(doctorRepository.findAll());
   }
 
+  /**
+   * Назначает приём для текущего пациента.
+   * Проверяет наличие пациента и доктора, устанавливает статус приёма и обновляет медицинскую историю пациента.
+   *
+   * @param appointmentRequest запрос на назначение приёма
+   * @return назначенный приём в виде {@link AppointmentDTO}
+   * @throws PatientNotFoundException если пациент с текущим email не найден
+   * @throws DoctorNotFoundException если доктор с указанным идентификатором не найден
+   */
   @Override
   @Transactional
   public AppointmentDTO makeAppointment(AppointmentDTO appointmentRequest) {
@@ -86,6 +108,16 @@ public class PatientServiceImpl implements PatientService {
     return appointmentMapper.toResponseDto(savedAppointment);
   }
 
+  /**
+   * Изменяет назначенный приём.
+   * Проверяет наличие приёма и права текущего пользователя на изменение этого приёма.
+   *
+   * @param id идентификатор приёма
+   * @param request запрос на изменение приёма
+   * @return обновлённый приём в виде {@link AppointmentDTO}
+   * @throws AppointmentNotFoundException если приём с указанным идентификатором не найден
+   * @throws UnauthorizedException если пользователь не авторизован для изменения этого приёма
+   */
   @Override
   public AppointmentDTO changeAppointment(Long id, RescheduleRequest request) {
     Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
@@ -110,6 +142,14 @@ public class PatientServiceImpl implements PatientService {
     return appointmentMapper.toResponseDto(savedAppointment);
   }
 
+  /**
+   * Отменяет назначенный приём.
+   * Проверяет наличие приёма и права текущего пользователя на отмену этого приёма.
+   *
+   * @param id идентификатор приёма
+   * @throws AppointmentNotFoundException если приём с указанным идентификатором не найден
+   * @throws UnauthorizedException если пользователь не авторизован для отмены этого приёма
+   */
   @Override
   public void cancelAppointment(Long id) {
     Optional<Appointment> appointmentOptional = appointmentsRepository.findById(id);
@@ -130,6 +170,12 @@ public class PatientServiceImpl implements PatientService {
     appointmentsRepository.deleteById(id);
   }
 
+  /**
+   * Получает список всех назначенных приёмов для текущего пациента.
+   *
+   * @return список назначенных приёмов в виде {@link List<AppointmentDTO>}
+   * @throws PatientNotFoundException если пациент с текущим email не найден
+   */
   @Override
   public List<AppointmentDTO> getAppointments() {
     Optional<Patient> patientOptional = patientRepository.findByEmail(getCurrentUser().getEmail());
@@ -142,6 +188,12 @@ public class PatientServiceImpl implements PatientService {
     return appointmentMapper.toDtoList(appointments);
   }
 
+  /**
+   * Получает список всех рецептов для текущего пациента.
+   *
+   * @return список рецептов в виде {@link List<PrescriptionDTO>}
+   * @throws PatientNotFoundException если пациент с текущим email не найден
+   */
   @Override
   public List<PrescriptionDTO> getPrescriptions() {
     String currentUserEmail = getCurrentUser().getEmail();
@@ -152,6 +204,4 @@ public class PatientServiceImpl implements PatientService {
     List<Prescriptions> prescriptions = prescriptionsRepository.findAllByPatient(patient).orElseThrow();
     return prescriptionMapper.toDtoList(prescriptions);
   }
-
-
 }

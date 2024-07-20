@@ -20,6 +20,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация сервиса для работы с докторами и их взаимодействия с пациентами.
+ * Обрабатывает запросы на получение и изменение медицинских записей пациентов,
+ * а также назначение рецептов и получение рецептов пациента.
+ */
 @Service
 @RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
@@ -33,10 +38,23 @@ public class DoctorServiceImpl implements DoctorService {
   private final AuthService authService;
 
   private final PrescriptionMapper prescriptionMapper;
+
+  /**
+   * Получает текущего аутентифицированного пользователя из сервиса аутентификации.
+   *
+   * @return текущий пользователь в виде {@link User}
+   */
   public final User getCurrentUser(){
     return authService.getCurrentSessionUser();
   }
 
+  /**
+   * Получает медицинскую историю пациента по его идентификатору.
+   *
+   * @param id идентификатор пациента
+   * @return медицинская история пациента
+   * @throws PatientNotFoundException если пациент с указанным идентификатором не найден
+   */
   @Override
   public String getPatientRecords(Long id) {
     Optional<Patient> patientOptional = patientRepository.findById(id);
@@ -47,6 +65,14 @@ public class DoctorServiceImpl implements DoctorService {
     return patient.getMedicalHistory();
   }
 
+  /**
+   * Изменяет медицинскую историю пациента по его идентификатору.
+   *
+   * @param id идентификатор пациента
+   * @param request запрос с новой медицинской историей
+   * @return обновлённая медицинская история пациента
+   * @throws PatientNotFoundException если пациент с указанным идентификатором не найден
+   */
   @Override
   public String changePatientRecord(Long id, ChangeRecordRequest request) {
     Optional<Patient> patientOptional = patientRepository.findById(id);
@@ -60,6 +86,14 @@ public class DoctorServiceImpl implements DoctorService {
     return patient.getMedicalHistory();
   }
 
+  /**
+   * Назначает рецепт пациенту.
+   *
+   * @param id идентификатор пациента
+   * @param prescriptionDTO данные рецепта
+   * @return назначенный рецепт в виде {@link PrescriptionDTO}
+   * @throws PatientNotFoundException если пациент с указанным идентификатором не найден
+   */
   @Override
   @Transactional
   public PrescriptionDTO makePrescription(Long id, PrescriptionDTO prescriptionDTO) {
@@ -84,6 +118,13 @@ public class DoctorServiceImpl implements DoctorService {
     }
   }
 
+  /**
+   * Получает список рецептов пациента по его идентификатору.
+   *
+   * @param id идентификатор пациента
+   * @return список рецептов пациента в виде {@link List<PrescriptionDTO>}
+   * @throws PatientNotFoundException если пациент с указанным идентификатором не найден
+   */
   @Override
   public List<PrescriptionDTO> getPatientPrescriptions(Long id) {
     Optional<Patient> patientOptional = patientRepository.findById(id);

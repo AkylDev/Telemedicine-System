@@ -28,6 +28,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+/**
+ * Реализация сервиса для аутентификации и регистрации пользователей.
+ * Обрабатывает регистрацию пациентов и докторов, а также аутентификацию пользователей.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -48,6 +52,15 @@ public class AuthServiceImpl implements AuthService {
 
   private final PatientMapper patientMapper;
 
+  /**
+   * Регистрирует нового пациента.
+   * Проверяет, существует ли уже пользователь с таким email,
+   * создаёт нового пользователя и пациента, устанавливает необходимые разрешения.
+   *
+   * @param registerRequest данные для регистрации пациента
+   * @return зарегистрированный пациент в виде {@link PatientDTO}
+   * @throws IllegalArgumentException если пользователь с таким email уже существует
+   */
   @Override
   public PatientDTO register(PatientDTO registerRequest) {
     User checkUser = userRepository.findByEmail(registerRequest.email());
@@ -76,6 +89,14 @@ public class AuthServiceImpl implements AuthService {
     return patientMapper.toDto(patientRepository.save(patient));
   }
 
+  /**
+   * Выполняет аутентификацию пользователя.
+   * Проверяет корректность введённых данных и устанавливает аутентификацию в контексте безопасности.
+   *
+   * @param request запрос на вход в систему с email и паролем
+   * @return данные пользователя в виде {@link UserDTO}
+   * @throws UsernameNotFoundException если учётные данные неверны
+   */
   @Override
   public UserDTO login(LoginRequest request) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(request.email());
@@ -90,6 +111,15 @@ public class AuthServiceImpl implements AuthService {
     }
   }
 
+  /**
+   * Добавляет нового доктора.
+   * Проверяет, существует ли уже пользователь с таким email,
+   * создаёт нового пользователя и доктора, устанавливает необходимые разрешения.
+   *
+   * @param doctorRequest данные для добавления доктора
+   * @return добавленный доктор в виде {@link DoctorDTO}
+   * @throws IllegalArgumentException если пользователь с таким email уже существует
+   */
   @Override
   public DoctorDTO addDoctor(DoctorDTO doctorRequest) {
     User checkUser = userRepository.findByEmail(doctorRequest.email());
@@ -119,6 +149,11 @@ public class AuthServiceImpl implements AuthService {
     return doctorMapper.toDto(savedDoctor);
   }
 
+  /**
+   * Возвращает текущего аутентифицированного пользователя из Spring Security контекста.
+   *
+   * @return текущий пользователь в виде {@link User} или {@code null}, если пользователь не аутентифицирован
+   */
   @Override
   public User getCurrentSessionUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
