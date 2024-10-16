@@ -16,8 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -157,7 +157,7 @@ public class AuthServiceImplTest {
 
     when(passwordEncoder.matches(password, userDetails.getPassword())).thenReturn(false);
 
-    UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class,
+    BadCredentialsException exception = assertThrows(BadCredentialsException.class,
             () -> authService.login(request));
     assertEquals("Invalid credentials", exception.getMessage());
 

@@ -18,6 +18,7 @@ import kz.projects.telemedicine.repositories.UserRepository;
 import kz.projects.telemedicine.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -107,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       return UserMapper.toDto((User) userDetails);
     } else {
-      throw new UsernameNotFoundException("Invalid credentials");
+      throw new BadCredentialsException("Invalid credentials");
     }
   }
 
